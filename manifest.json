@@ -1,0 +1,32 @@
+{
+  "manifest_version": 2,
+  "name": "Utopian Moderator & Supervisor",
+  "short_name": "Utopian-IO",  
+  "default_locale": "en",
+  "version": "0.0.1",
+  "browser_action": {
+     "default_icon": "icon.png",
+     "default_title": "Utopian Moderator & Supervisor",
+     "default_popup": "utopian-ext-main.html"
+  },
+  "author": "justyy<dr.zhihua.lai@gmail.com>",
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  },  
+  "update_url":"http://clients2.google.com/service/update2/crx",
+  "description": "This is a Chrome Extension that is specifically for Utopian Moderator & Supervisor.",
+  "web_accessible_resources": [
+  		"js/*", 
+  		"images/*",
+  		"bs/*"
+  ],
+  "permissions": [
+     "activeTab",
+     "storage",
+     "tabs",
+     "<all_urls>"
+  ]
+}
