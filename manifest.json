@@ -21,6 +21,7 @@
   "web_accessible_resources": [
   		"js/*", 
   		"images/*",
+      "css/*",
   		"bs/*"
   ],
   "permissions": [
