@@ -11,7 +11,8 @@ Javascript that runs in Chrome Extension
 https://github.com/DoctorLai/utopian-moderator
 
 # Chrome Webstore
-Yes, it is online. And if you search `Utopian` you will see this is the ONLY related Chrome Extension!
+- https://chrome.google.com/webstore/detail/utopian-moderator-supervi/dcjdbldgiiboblbaconadffdaicicebc
+- Yes, it is online. And if you search `Utopian` you will see this is the ONLY related Chrome Extension!
 
 https://chrome.google.com/webstore/detail/utopian-moderator-supervi/dcjdbldgiiboblbaconadffdaicicebc
 
