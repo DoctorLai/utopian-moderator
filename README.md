@@ -5,20 +5,17 @@ A Chrome Extension for Utopian Moderator &amp; Supervisors
 As a utopian moderator, I found it necessary to provide a handy Chrome Extension for Utopian Moderators and Supervisors. This handy browser extension will certainly be helping moderating work and provide some useful shortcuts,  data and information.
 
 # Technology Stack
-Javascript that runs in Chrome Extension
+Javascript that runs in Chrome Extension.
 
 # Github
 https://github.com/DoctorLai/utopian-moderator
 
 # Chrome Webstore
-- https://chrome.google.com/webstore/detail/utopian-moderator-supervi/dcjdbldgiiboblbaconadffdaicicebc
-- Yes, it is online. And if you search `Utopian` you will see this is the ONLY related Chrome Extension!
-
+Yes, it is online. And if you search `Utopian` you will see this is the ONLY related Chrome Extension!
 https://chrome.google.com/webstore/detail/utopian-moderator-supervi/dcjdbldgiiboblbaconadffdaicicebc
 
-![image.png](https://res.cloudinary.com/hpiynhbhq/image/upload/v1517270310/cybskxqccnyelog5j2hk.png)
-
-![image.png](https://res.cloudinary.com/hpiynhbhq/image/upload/v1517270319/ypxsunrefjakite0rsc1.png)
+![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-published.jpg)
+![](https://helloacm.com/wp-content/uploads/2018/01/chrome-extension-utopian-moderator-supervisor.jpg)
 
 # Version 0.0.1
 The very first version has the following features:
@@ -29,18 +26,18 @@ The very first version has the following features:
 5. Show App Log
 
 # Screenshots
-![image.png](https://res.cloudinary.com/hpiynhbhq/image/upload/v1517270414/z4dbhouqpp185u6lj5fe.png)
-
-![image.png](https://res.cloudinary.com/hpiynhbhq/image/upload/v1517270422/frdww1ak9xesn59je7b5.png)
-
-![image.png](https://res.cloudinary.com/hpiynhbhq/image/upload/v1517270427/vybsopasbfftdwmskwde.png)
-
-![image.png](https://res.cloudinary.com/hpiynhbhq/image/upload/v1517270433/mu0i4tnyrvslktzir4dc.png)
-
-![image.png](https://res.cloudinary.com/hpiynhbhq/image/upload/v1517270438/el2ya0xebwp9ywbga7j8.png)
+![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-shortcuts.jpg)
+![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-log-600x401.jpg)
+![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-general.jpg)
+![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-about.jpg)
+![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-.jpg)
 
 # Roadmap
 I am adding the following features in the next coming versions:
 1. Shortcut to switch between Utopian and Steemit Posts
 2. Show More statistics for a given category.
 3. Show Personal Moderating statistics
+
+# Posts
+- [The First Utopian Moderator Chrome Extension](https://helloacm.com/the-first-utopian-moderator-chrome-extension/)
+- [The First Utopian Moderator Chrome Extension](https://steemit.com/utopian-io/@justyy/the-first-utopian-moderator-chrome-extension)
