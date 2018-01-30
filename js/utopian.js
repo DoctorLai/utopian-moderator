@@ -87,7 +87,6 @@ function getVP(id) {
         },
         complete: function(data) {
             logit("API Finished.");
-            $('img#loading').hide();
         }             
     });    
 }
@@ -109,7 +108,6 @@ function getRep(id) {
         },
         complete: function(data) {
             logit("API Finished.");
-            $('img#loading').hide();
         }             
     });    
 }
@@ -120,26 +118,34 @@ document.addEventListener('DOMContentLoaded', function() {
         $( "#tabs" ).tabs();
     });
     // load steem id
-    chrome.storage.sync.get('steemit_id', function(data) {
-        if (data != null) {
-            if ((data.steemit_id != null)) {
-                let id = data.steemit_id.trim();
+    chrome.storage.sync.get('utopian_settings', function(data) {
+        if (data && data.utopian_settings) {
+            let utopian = data.utopian_settings;
+            if (utopian["steemit_id"]) {
+                let id = utopian["steemit_id"].trim();
                 $('input#steemit_id').val(id);  
                 if (id != '') {
                     getVP(id);
                     getRep(id);
                 }
             }
+            if (utopian["steemit_website"]) {
+                let website = utopian["steemit_website"].trim();
+                $('select#steemit_website').val(website);
+            }
         }
     });
     $('button#save_id_btn').click(function() {
         let id = $('input#steemit_id').val().trim();
+        let website = $('select#steemit_website').val();
+        let utopian = {};
+        utopian['steemit_id'] = id;
+        utopian['steemit_website'] = website;
         chrome.storage.sync.set({ 
-            steemit_id: id
+            utopian_settings: utopian
+        }, function() {
+            alert('Saved.');
         });
-        if (id != '') {
-            alert('ID Saved.');
-        }
     });  
     // about
     let manifest = chrome.runtime.getManifest();    

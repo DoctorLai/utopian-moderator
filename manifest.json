@@ -3,7 +3,7 @@
   "name": "Utopian Moderator & Supervisor",
   "short_name": "Utopian-IO",  
   "default_locale": "en",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "browser_action": {
      "default_icon": "icon.png",
      "default_title": "Utopian Moderator & Supervisor",
@@ -24,6 +24,17 @@
       "css/*",
   		"bs/*"
   ],
+  "background": {
+    "scripts": ["js/background.js"]
+  },  
+  "content_scripts": [{
+      "matches": ["<all_urls>"],
+      "js":[
+          "js/jquery-3.2.1.min.js",
+          "js/content.js"
+      ],
+      "run_at":"document_start"
+  }],
   "permissions": [
      "activeTab",
      "storage",
