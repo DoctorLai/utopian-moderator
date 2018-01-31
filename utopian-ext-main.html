@@ -22,7 +22,7 @@
     .ext-window {width: 600px;}
     textarea {width: 100%;}
     img {max-width: 100%;}
-    #chartdiv {width: 100%; height: 550px;}
+    #chartdiv_moderators_count, #chartdiv, #chartdiv_moderators_total_paid {width: 100%; height: 550px;}
     #account_vp_100 {width: 100%; background-color: grey;}
     #account_vp {color: white;}
     </style>
@@ -30,19 +30,20 @@
   <body>
     <div id="tabs" class='ext-window'>
       <ul>
-        <li><a href="#tabs-1">General</a></li>
-        <li><a href="#tabs-2">Short Cuts</a></li>
-        <li><a href="#tabs-3">Setting</a></li>
-        <li><a href="#tabs-4">Log</a></li>
-        <li><a href="#tabs-5">About</a></li>
+        <li><a href="#tabs-general">General</a></li>
+        <li><a href="#tabs-shortcuts">Short Cuts</a></li>
+        <li><a href="#tabs-moderators">Moderators</a></li>
+        <li><a href="#tabs-setting">Setting</a></li>
+        <li><a href="#tabs-log">Log</a></li>
+        <li><a href="#tabs-about">About</a></li>
       </ul>
-      <div id="tabs-1">
+      <div id="tabs-general">
+        <img id='loading' src='images/loading.gif' />
         <div id='account_vp_100'> <div id='account_vp'> </div> </div>
         <div id='account_rep'> </div>
-        <div id='chartdiv'> </div>
-        <img id='loading' src='images/loading.gif' />
+        <div id='chartdiv'> </div>        
       </div>
-      <div id="tabs-2">
+      <div id="tabs-shortcuts">
         <ul>
           <li><a target=_blank href="https://utopian.io/all/review">All</a></li>
           <li><a target=_blank href="https://utopian.io/translations/review">Translations</a></li>
@@ -60,7 +61,15 @@
           <li><a target=_blank href="https://utopian.io/sub-projects/review">Sub Projects</a></li>          
         </ul>
       </div>
-      <div id="tabs-3">
+      <div id="tabs-moderators">    
+        <img id='loading-moderators' src='images/loading.gif' />
+        <div id="moderators"> </div>
+        <h4>Top Moderators by total_moderated</h4>
+        <div id='chartdiv_moderators_count'> </div>
+        <h4>Top Moderators by total_paid_steem</h4>
+        <div id='chartdiv_moderators_total_paid'> </div>        
+      </div>      
+      <div id="tabs-setting">
         <p><h4>Your SteemId ID: </h4><input type='text' class='form-control' id='steemit_id' name='steemit_id' value=''></p>
         <p>
           <h4>Alt + S: </h4>
@@ -71,11 +80,11 @@
         </p>
         <p><button class='form-control' style='width:70px' id='save_id_btn'>Save</button></p>
       </div>
-      <div id="tabs-4">
+      <div id="tabs-log">
         <textarea readonly class='form-control' rows=15 id='about'>           
         </textarea>         
       </div>      
-      <div id="tabs-5">
+      <div id="tabs-about">
         <div>
           Proudly brought to you by <a target=_blank href="https://steemit.com/@justyy">@justyy</a>
         </div>
