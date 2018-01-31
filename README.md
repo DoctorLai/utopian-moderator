@@ -1,8 +1,8 @@
 # utopian-moderator
-A Chrome Extension for Utopian Moderator &amp; Supervisors
+A Chrome Extension for Utopian Moderator &amp; Supervisors.
 
 # Project Motivation
-As a utopian moderator, I found it necessary to provide a handy Chrome Extension for Utopian Moderators and Supervisors. This handy browser extension will certainly be helping moderating work and provide some useful shortcuts,  data and information.
+As a utopian moderator, I found it necessary to provide a handy Chrome Extension for Utopian Moderators and Supervisors. This handy browser extension will certainly be helping moderating work and provide some useful shortcuts, tools and information.
 
 # Technology Stack
 Javascript that runs in Chrome Extension.
@@ -17,27 +17,29 @@ https://chrome.google.com/webstore/detail/utopian-moderator-supervi/dcjdbldgiibo
 ![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-published.jpg)
 ![](https://helloacm.com/wp-content/uploads/2018/01/chrome-extension-utopian-moderator-supervisor.jpg)
 
-# Version 0.0.1
-The very first version has the following features:
-1. Configure SteemId
-2. Show Realtime Voting Power and Reputation
-3. Shortcuts Page
-4. Pie Chart of Total Posts by Categories
-5. Show App Log
-
 # Screenshots
 ![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-shortcuts.jpg)
 ![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-log-600x401.jpg)
-![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-general.jpg)
+![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/general.jpg?raw=true)
 ![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-about.jpg)
 ![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-.jpg)
+![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/moderators.jpg?raw=true)
+![](https://helloacm.com/wp-content/uploads/2018/01/utopian-top-moderators-by-total-paid-steem.jpg)
+![](https://helloacm.com/wp-content/uploads/2018/01/loading-gif-utopian-chrome-extension.jpg)
 
 # Roadmap
 I am adding the following features in the next coming versions:
-1. Shortcut to switch between Utopian and Steemit Posts
-2. Show More statistics for a given category.
-3. Show Personal Moderating statistics
+- Add more handy tools/features regarding to the post.
+- Add feature to search a moderator or a supervisor.
+- Add more Global statistics.
+- Add some real time statistics.
 
-# Posts
-- [The First Utopian Moderator Chrome Extension](https://helloacm.com/the-first-utopian-moderator-chrome-extension/)
+# SteemIt Posts
 - [The First Utopian Moderator Chrome Extension](https://steemit.com/utopian-io/@justyy/the-first-utopian-moderator-chrome-extension)
+- [Adding `Easy Switch Between Utopian and Steem Posts` to Utopian Moderator Chrome Extension](https://steemit.com/utopian-io/@justyy/adding-easy-switch-between-utopian-and-steem-posts-to-utopian-moderator-chrome-extension)
+- [Adding `Moderators Tab` to Utopian Chrome Extension!](https://steemit.com/utopian-io/@justyy/adding-moderators-tab-to-utopian-chrome-extension)
+
+# Blog Posts
+- [The First Utopian Moderator Chrome Extension](https://helloacm.com/the-first-utopian-moderator-chrome-extension/)
+- [Adding `Easy Switch Between Utopian and Steem Posts` to Utopian Moderator Chrome Extension](https://helloacm.com/adding-easy-switch-between-utopian-and-steem-posts-to-utopian-moderator-chrome-extension/)
+- [Adding `Moderators Tab` to Utopian Chrome Extension!](https://helloacm.com/adding-moderators-tab-to-utopian-chrome-extension/)
