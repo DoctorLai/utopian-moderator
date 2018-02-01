@@ -94,15 +94,16 @@ function updateModerators(api) {
                 total_paid_steem += row["total_paid_rewards_steem"];
             }           
             const showtop = 15;
+            const showtop_paid = 20;
             data_cnt.sort(function(a, b) {
                 return b['total_moderated'] - a['total_moderated'];
             });
-            data_cnt.sort(function(a, b) {
+            data_total_paid.sort(function(a, b) {
                 return b['total_paid_rewards_steem'] - a['total_paid_rewards_steem'];
             });            
             // keep the top list
             data_cnt = data_cnt.slice(0, showtop); 
-            data_total_paid = data_total_paid.slice(0, showtop); 
+            data_total_paid = data_total_paid.slice(0, showtop_paid); 
             // sum up the total_moderated
             let top = 0;
             let top_paid = 0;
@@ -112,8 +113,8 @@ function updateModerators(api) {
             for (let i = data_total_paid.length - 1; i --; ) {
                 top_paid += data_total_paid[i]['total_paid_rewards_steem'];
             }            
-            data_cnt.push({"moderator": "others", "total_moderated": total_moderated - top});
-            data_total_paid.push({"moderator": "others", "total_paid_rewards_steem": data_total_paid - top_paid});
+            data_cnt.push({"moderator": "others", "total_moderated": total_moderated - top});            
+            data_total_paid.push({"moderator": "others", "total_paid_rewards_steem": total_paid_steem - top_paid});
             let chart_mmoderators_count = AmCharts.makeChart( "chartdiv_moderators_count", {
                 "type": "pie",
                 "theme": "light",
@@ -142,12 +143,11 @@ function updateModerators(api) {
                   "enabled": false
                 }
             });   
-            s += "<div>";
+            s += "<h4>Overall</h4>";
             s += "<ul>"                   
             s += "<li>Total Moderated: <B>" + total_moderated + "</B>.</li>";
             s += "<li>Total Paid: <B>" + total_paid_steem.toFixed(3) + "</B> STEEM.</li>";
             s += "</ul>";
-            s += "</div>";
             $('div#moderators').html(s);
         },
         error: function(request, status, error) {
