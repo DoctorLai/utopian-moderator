@@ -1,5 +1,11 @@
 'use strict';
 
+const validId = (id) => {
+    id = id.trim();
+    let pat = /^[a-z0-9\-\.]+$/g;
+    return id && pat.test(id);
+}
+
 const getChromeVersion = () => {
     var raw = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
     return raw ? parseInt(raw[2], 10) : false;
@@ -157,20 +163,80 @@ function updateModerators(api) {
         },
         complete: function(data) {
             logit("API Finished: Moderators.");
+            $('img#loading-chart').hide();
             $('img#loading-moderators').hide();
         }             
     });    
 }
 
-function getVP(id) {
+function getModeratorStats(api) {
+    let api_approved = api + "&status=reviewed";
+    let api_rejected = api + "&status=flagged";
+    logit("calling " + api_approved);
+    $.ajax({
+        type: "GET",
+        url: api_approved,
+        success: function(result) {
+            let approved_cnt = result.total;
+            logit("calling " + api_rejected);
+            $.ajax({
+                type: "GET",
+                url: api_rejected,
+                success: function(result) {
+                    let rejected_cnt = result.total;
+                    let s = "<h4>Your Approved/Rejected Stats</h4>";
+                    s += "<ul>";
+                    s += "<li>Approved: <B>" + approved_cnt + "</B></li>";
+                    s += "<li>Rejected: <B>" + rejected_cnt + "</B></li>";
+                    s += "</ul>";
+                    $('div#moderators_stats').html(s);
+                    let data = [];
+                    data.push({"status": "approved", "count": approved_cnt});
+                    data.push({"status": "rejected", "count": rejected_cnt});
+                    let chart = AmCharts.makeChart( "chart_moderators", {
+                        "type": "pie",
+                        "theme": "light",
+                        "dataProvider": data,
+                        "startDuration": 0,
+                        "valueField": "count",
+                        "titleField": "status",
+                        "balloon":{
+                          "fixedPosition": true
+                        },
+                        "export": {
+                          "enabled": false
+                        }
+                    });                       
+                },
+                error: function(request, status, error) {
+                    logit('Response: ' + request.responseText);
+                    logit('Error: ' + error );
+                    logit('Status: ' + status);
+                },
+                complete: function(data) {
+                    logit("API Finished: Get Rejected Number.");
+                }             
+            });             
+        },
+        error: function(request, status, error) {
+            logit('Response: ' + request.responseText);
+            logit('Error: ' + error );
+            logit('Status: ' + status);
+        },
+        complete: function(data) {
+            logit("API Finished: Get Approved Number.");
+        }             
+    });    
+}
+
+function getVP(id, dom) {
     let api = 'https://helloacm.com/api/steemit/account/vp/?id=' + id;
     logit("calling " + api);
     $.ajax({
         type: "GET",
         url: api,
         success: function(result) {
-            let dom = $('div#account_vp');
-            dom.html("<i>Your Voting Power is</i> <B>" + result + "%</B>");
+            dom.html("<i>@" + id + "'s Voting Power is</i> <B>" + result + "%</B>");
             if (result < 30) {
                 dom.css("background-color", "red");
             } else if (result < 60) {
@@ -186,20 +252,19 @@ function getVP(id) {
             logit('Status: ' + status);
         },
         complete: function(data) {
-            logit("API Finished: VP.");
+            logit("API Finished: VP + " + id);
         }             
     });    
 }
 
-function getRep(id) {
+function getRep(id, dom) {
     let api = 'https://helloacm.com/api/steemit/account/reputation/?id=' + id;
     logit("calling " + api);
     $.ajax({
         type: "GET",
         url: api,
         success: function(result) {
-            let dom = $('div#account_rep');
-            dom.html("<i>Your Reputation is</i> <B>" + result + "</B>");
+            dom.html("<i>@" + id + "'s Reputation is</i> <B>" + result + "</B>");
         },
         error: function(request, status, error) {
             logit('Response: ' + request.responseText);
@@ -207,7 +272,7 @@ function getRep(id) {
             logit('Status: ' + status);
         },
         complete: function(data) {
-            logit("API Finished: Reputation.");
+            logit("API Finished: Reputation - " + id);
         }             
     });    
 }
@@ -224,29 +289,49 @@ document.addEventListener('DOMContentLoaded', function() {
             if (utopian["steemit_id"]) {
                 let id = utopian["steemit_id"].trim();
                 $('input#steemit_id').val(id);  
-                if (id != '') {
-                    getVP(id);
-                    getRep(id);
+                if (validId(id)) {
+                    getVP(id, $("div#account_vp"));
+                    getRep(id, $("div#account_rep"));
+                    getModeratorStats("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=1");
                 }
             }
             if (utopian["steemit_website"]) {
                 let website = utopian["steemit_website"].trim();
                 $('select#steemit_website').val(website);
             }
+            if (utopian["friends"]) {
+                let friends = utopian["friends"].trim();
+                $('textarea#friends').val(friends);
+                friends = friends.split("\n");
+                let len = friends.length;
+                for (let i = 0; i < len; ++ i) {
+                    let id = friends[i];
+                    if (validId(id)) {
+                        $("div#friends_vp_rep").append("<div id='account_vp_100_" + id + "' class='vpbar'><div id='account_vp_" + id + "' class='vp'> </div> </div><div id='account_rep_" + id + "'> </div>");
+                        getRep(id, $('div#account_rep_' + id));
+                        getVP(id, $('div#account_vp_' + id));
+                    }
+                }                
+            }
         }
     });
     $('button#save_id_btn').click(function() {
         let id = $('input#steemit_id').val().trim();
         let website = $('select#steemit_website').val();
+        let friends = $('textarea#friends').val();
         let utopian = {};
         utopian['steemit_id'] = id;
         utopian['steemit_website'] = website;
+        utopian['friends'] = friends;
         chrome.storage.sync.set({ 
             utopian_settings: utopian
         }, function() {
             alert('Saved.');
         });
     });  
+    // utopian-io
+    getVP("utopian-io", $("div#account_utopian_vp"));
+    getRep("utopian-io", $("div#account_utopian_rep"));    
     // about
     let manifest = chrome.runtime.getManifest();    
     let app_name = manifest.name + " v" + manifest.version;
