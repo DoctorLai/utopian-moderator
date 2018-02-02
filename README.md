@@ -5,7 +5,7 @@ A Chrome Extension for Utopian Moderator &amp; Supervisors.
 As a utopian moderator, I found it necessary to provide a handy Chrome Extension for Utopian Moderators and Supervisors. This handy browser extension will certainly be helping moderating work and provide some useful shortcuts, tools and information.
 
 # Technology Stack
-Javascript that runs in Chrome Extension.
+Javascript that runs in the Chrome Browser (Chrome Extension)
 
 # Github
 https://github.com/DoctorLai/utopian-moderator
@@ -38,8 +38,10 @@ I am adding the following features in the next coming versions:
 - [The First Utopian Moderator Chrome Extension](https://steemit.com/utopian-io/@justyy/the-first-utopian-moderator-chrome-extension)
 - [Adding `Easy Switch Between Utopian and Steem Posts` to Utopian Moderator Chrome Extension](https://steemit.com/utopian-io/@justyy/adding-easy-switch-between-utopian-and-steem-posts-to-utopian-moderator-chrome-extension)
 - [Adding `Moderators Tab` to Utopian Chrome Extension!](https://steemit.com/utopian-io/@justyy/adding-moderators-tab-to-utopian-chrome-extension)
+- [Adding `Approved/Rejected` Stats, Showing Friends' VP/Rep to Utopian Moderator Chrome Extension!](https://steemit.com/utopian-io/@justyy/adding-approved-rejected-stats-showing-friends-vp-rep-to-utopian-moderator-chrome-extension)
 
 # Blog Posts
 - [The First Utopian Moderator Chrome Extension](https://helloacm.com/the-first-utopian-moderator-chrome-extension/)
 - [Adding `Easy Switch Between Utopian and Steem Posts` to Utopian Moderator Chrome Extension](https://helloacm.com/adding-easy-switch-between-utopian-and-steem-posts-to-utopian-moderator-chrome-extension/)
 - [Adding `Moderators Tab` to Utopian Chrome Extension!](https://helloacm.com/adding-moderators-tab-to-utopian-chrome-extension/)
+- [Adding `Approved/Rejected` Stats, Showing Friends' VP/Rep to Utopian Moderator Chrome Extension!](https://helloacm.com/adding-approved-rejected-stats-and-showing-friends-vp-rep-to-utopian-moderator-chrome-extension/)
