@@ -19,6 +19,67 @@ const logit = (msg) => {
     dom.val(s + "\n" + n + ": " + msg);
 }
 
+function updateUnreviewed(api) {
+    logit("calling " + api);
+    $.ajax({
+        type: "GET",
+        url: api,
+        success: function(result) {
+            let data = [];
+            let categories = result.posts.pending.categories;
+            let total = result.posts.pending._total;
+            let s = "<h5>Total: <B>" + total + "</B></h5>";
+            data.push({"name": "development", "category": "Development", "posts":categories.development});
+            data.push({"name": "bug-hunting", "category": "Bug Hunting", "posts":categories.bug_hunting});
+            data.push({"name": "sub-projects", "category": "Sub Projects", "posts":categories.sub_projects});
+            data.push({"name": "documentation", "category": "Documentation", "posts":categories.documentation});
+            data.push({"name": "translations", "category": "Translations", "posts":categories.translations});
+            data.push({"name": "analysis", "category": "Analysis", "posts":categories.analysis});
+            data.push({"name": "ideas", "category": "Suggestions", "posts":categories.ideas});
+            data.push({"name": "graphics", "category": "Graphics", "posts":categories.graphics});
+            data.push({"name": "tutorials", "category": "Tutorials", "posts":categories.tutorials});
+            data.push({"name": "video-tutorials", "category": "Video Tutorials", "posts":categories.video_tutorials});
+            data.push({"name": "blog", "category": "Blog", "posts":categories.blog});
+            data.push({"name": "tasks", "category": "Task Requests", "posts":categories.tasks});
+            data.push({"name": "social", "category": "Visibility", "posts":categories.social});
+            data.push({"name": "copywriting", "category": "Copywriting", "posts":categories.copywriting});
+            let datalen = data.length;
+            data.sort(function(a, b) {
+                return b['posts'] - a['posts'];
+            })
+            s += "<ul>";
+            for (let i = 0; i < datalen; ++ i) {
+                s += "<li><a target=_blank href='https://utopian.io/" + data[i]['name'] + "/review'>" + data[i]['category'] + ' (' + data[i]['posts'] + ')</a></li>';
+            }
+            s += "</ul>";            
+            $('div#unreviewed_cnt').html(s);
+            let chart = AmCharts.makeChart( "chart_unreviewed", {
+                "type": "pie",
+                "theme": "light",
+                "dataProvider": data,
+                "startDuration": 0,
+                "valueField": "posts",
+                "titleField": "category",
+                "balloon":{
+                  "fixedPosition": true
+                },
+                "export": {
+                  "enabled": false
+                }
+            });          
+        },
+        error: function(request, status, error) {
+            logit('Response: ' + request.responseText);
+            logit('Error: ' + error );
+            logit('Status: ' + status);
+        },
+        complete: function(data) {
+            logit("API Finished: unreviewed.");
+            $('img#loading-unreviewed').hide();
+        }             
+    });    
+}
+
 function updateStats(api) {
     logit("calling " + api);
     $.ajax({
@@ -178,12 +239,30 @@ function getModeratorStats(api) {
         url: api_approved,
         success: function(result) {
             let approved_cnt = result.total;
+            let approved_s = "<h4>Latest Approved Posts</h4>";
+            approved_s += "<ul>";
+            let approved_len = result.results.length;
+            for (let i = 0; i < approved_len; ++ i) {
+                let post = result.results[i];
+                approved_s += "<li><a target=_blank href='https://utopian.io/utopian-io/@" + post['author'] + '/' + post['permlink'] + "'>" + post['title'] + "</a> by @" + post['author'] + "</li>";
+            }
+            approved_s += "</ul>";
+            $('div#moderators_approved').html(approved_s);
             logit("calling " + api_rejected);
             $.ajax({
                 type: "GET",
                 url: api_rejected,
                 success: function(result) {
-                    let rejected_cnt = result.total;
+                    let rejected_s = "<h4>Latest Rejected Posts</h4>";
+                    rejected_s += "<ul>";
+                    let rejected_len = result.results.length;
+                    for (let i = 0; i < rejected_len; ++ i) {
+                        let post = result.results[i];
+                        rejected_s += "<li><a target=_blank href='https://utopian.io/utopian-io/@" + post['author'] + '/' + post['permlink'] + "'>" + post['title'] + "</a> by @" + post['author'] + "</li>";
+                    }
+                    rejected_s += "</ul>";
+                    $('div#moderators_rejected').html(rejected_s);                    
+                    let rejected_cnt = result.total;                    
                     let s = "<h4>Your Approved/Rejected Stats</h4>";
                     s += "<ul>";
                     s += "<li>Approved: <B>" + approved_cnt + "</B></li>";
@@ -292,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (validId(id)) {
                     getVP(id, $("div#account_vp"));
                     getRep(id, $("div#account_rep"));
-                    getModeratorStats("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=1");
+                    getModeratorStats("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=8");
                 }
             }
             if (utopian["steemit_website"]) {
@@ -340,4 +419,6 @@ document.addEventListener('DOMContentLoaded', function() {
     updateStats("https://api.utopian.io/api/stats");
     // load moderator data
     updateModerators("https://api.utopian.io/api/moderators");
+    // load unreviewed contributions
+    updateUnreviewed("https://utopian.plus/unreviewedPosts.json");
 }, false);
