@@ -18,21 +18,25 @@ https://chrome.google.com/webstore/detail/utopian-moderator-supervi/dcjdbldgiibo
 ![](https://helloacm.com/wp-content/uploads/2018/01/chrome-extension-utopian-moderator-supervisor.jpg)
 
 # Screenshots
-![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-shortcuts.jpg)
-![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-log-600x401.jpg)
+![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/shortcuts.jpg?raw=true)
+![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/log.jpg?raw=true)
 ![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/general.jpg?raw=true)
-![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-about.jpg)
 ![](https://helloacm.com/wp-content/uploads/2018/01/utopian-chrome-extension-steemit-tab-.jpg)
 ![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/moderators.jpg?raw=true)
 ![](https://helloacm.com/wp-content/uploads/2018/01/utopian-top-moderators-by-total-paid-steem.jpg)
 ![](https://helloacm.com/wp-content/uploads/2018/01/loading-gif-utopian-chrome-extension.jpg)
+![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/moderators.jpg?raw=true)
+![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/setting.jpg?raw=true)
+![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/chart1.jpg?raw=true)
+![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/chart2.jpg?raw=true)
 
 # Roadmap
 I am adding the following features in the next coming versions:
 - Add more handy tools/features regarding to the post.
 - Add feature to search a moderator or a supervisor.
-- Add more Global statistics.
+- Add more global statistics.
 - Add some real time statistics.
+- Add unreviewed contributions statistics.
 
 # SteemIt Posts
 - [The First Utopian Moderator Chrome Extension](https://steemit.com/utopian-io/@justyy/the-first-utopian-moderator-chrome-extension)
