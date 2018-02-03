@@ -29,6 +29,8 @@ https://chrome.google.com/webstore/detail/utopian-moderator-supervi/dcjdbldgiibo
 ![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/setting.jpg?raw=true)
 ![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/chart1.jpg?raw=true)
 ![](https://github.com/DoctorLai/utopian-moderator/blob/master/images/chart2.jpg?raw=true)
+![](https://steemitimages.com/0x0/https://res.cloudinary.com/hpiynhbhq/image/upload/v1517614807/ohclcpeihsuia9etmxex.png)
+![](https://steemitimages.com/0x0/https://res.cloudinary.com/hpiynhbhq/image/upload/v1517614931/nrjqtrwenwyqwpvptzso.png)
 
 # Roadmap
 I am adding the following features in the next coming versions:
@@ -43,9 +45,11 @@ I am adding the following features in the next coming versions:
 - [Adding `Easy Switch Between Utopian and Steem Posts` to Utopian Moderator Chrome Extension](https://steemit.com/utopian-io/@justyy/adding-easy-switch-between-utopian-and-steem-posts-to-utopian-moderator-chrome-extension)
 - [Adding `Moderators Tab` to Utopian Chrome Extension!](https://steemit.com/utopian-io/@justyy/adding-moderators-tab-to-utopian-chrome-extension)
 - [Adding `Approved/Rejected` Stats, Showing Friends' VP/Rep to Utopian Moderator Chrome Extension!](https://steemit.com/utopian-io/@justyy/adding-approved-rejected-stats-showing-friends-vp-rep-to-utopian-moderator-chrome-extension)
+- [Adding Unreviewed Contributions + List of Approved/Rejected Posts to Utopian Chrome Extension!](https://steemit.com/utopian-io/@justyy/adding-unreviewed-contributions-list-of-approved-rejected-posts-to-utopian-chrome-extension)
 
 # Blog Posts
 - [The First Utopian Moderator Chrome Extension](https://helloacm.com/the-first-utopian-moderator-chrome-extension/)
 - [Adding `Easy Switch Between Utopian and Steem Posts` to Utopian Moderator Chrome Extension](https://helloacm.com/adding-easy-switch-between-utopian-and-steem-posts-to-utopian-moderator-chrome-extension/)
 - [Adding `Moderators Tab` to Utopian Chrome Extension!](https://helloacm.com/adding-moderators-tab-to-utopian-chrome-extension/)
 - [Adding `Approved/Rejected` Stats, Showing Friends' VP/Rep to Utopian Moderator Chrome Extension!](https://helloacm.com/adding-approved-rejected-stats-and-showing-friends-vp-rep-to-utopian-moderator-chrome-extension/)
+- [Adding Unreviewed Contributions + List of Approved/Rejected Posts to Utopian Chrome Extension!](https://helloacm.com/adding-unreviewed-contributions-list-of-approved-rejected-posts-to-utopian-chrome-extension/)
