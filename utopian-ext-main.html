@@ -32,7 +32,8 @@
       <ul>
         <li><a href="#tabs-general">General</a></li>
         <li><a href="#tabs-unreviewed">Unreviewed</a></li>
-        <li><a href="#tabs-moderators">Moderators</a></li>
+        <li><a href="#tabs-moderators">Moderator</a></li>
+        <li><a href="#tabs-supervisor">Supervisor</a></li>
         <li><a href="#tabs-chart">Chart</a></li>
         <li><a href="#tabs-setting">Setting</a></li>
         <li><a href="#tabs-log">Log</a></li>        
@@ -61,6 +62,20 @@
         <div id="moderators_rejected"> </div>
         <div id='chart_moderators' class="chart"> </div>
       </div>  
+      <div id="tabs-supervisor">
+        <div id='search_team_result'> </div>
+        <h4>Search a Moderator or Supervisor</h4>
+        <input class='form-control' type='text' id='mod_id' placeholder="Steem ID without @" />
+        <button class='form-control' id='search_id' style='width: 70px'>Search</button>
+        <div id='search_result'> </div>
+        <div id='search_result_vp_100' class="vpbar"> <div id='search_result_vp' class="vp"> </div> </div>
+        <div id='search_result_rep'> </div>
+        <div id='search_result_stats2'> </div>
+        <div id='search_result_stats'> </div>
+        <div id='search_result_approved'> </div>
+        <div id='search_result_rejected'> </div>
+        <div id='search_result_chart' class="chart"> </div>        
+      </div>           
       <div id="tabs-chart">    
         <img id='loading-chart' src='images/loading.gif' />
         <h4>Top Moderators by total_moderated</h4>

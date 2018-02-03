@@ -230,7 +230,7 @@ function updateModerators(api) {
     });    
 }
 
-function getModeratorStats(api) {
+function getModeratorStats(api, dom_approved, dom_rejected, dom_stats, div_of_chart) {
     let api_approved = api + "&status=reviewed";
     let api_rejected = api + "&status=flagged";
     logit("calling " + api_approved);
@@ -244,10 +244,10 @@ function getModeratorStats(api) {
             let approved_len = result.results.length;
             for (let i = 0; i < approved_len; ++ i) {
                 let post = result.results[i];
-                approved_s += "<li><a target=_blank href='https://utopian.io/utopian-io/@" + post['author'] + '/' + post['permlink'] + "'>" + post['title'] + "</a> by @" + post['author'] + "</li>";
+                approved_s += "<li><a target=_blank href='https://utopian.io/utopian-io/@" + post['author'] + '/' + post['permlink'] + "'>" + post['title'] + "</a> by <I>@" + post['author'] + "</I></li>";
             }
             approved_s += "</ul>";
-            $('div#moderators_approved').html(approved_s);
+            dom_approved.html(approved_s);
             logit("calling " + api_rejected);
             $.ajax({
                 type: "GET",
@@ -258,21 +258,21 @@ function getModeratorStats(api) {
                     let rejected_len = result.results.length;
                     for (let i = 0; i < rejected_len; ++ i) {
                         let post = result.results[i];
-                        rejected_s += "<li><a target=_blank href='https://utopian.io/utopian-io/@" + post['author'] + '/' + post['permlink'] + "'>" + post['title'] + "</a> by @" + post['author'] + "</li>";
+                        rejected_s += "<li><a target=_blank href='https://utopian.io/utopian-io/@" + post['author'] + '/' + post['permlink'] + "'>" + post['title'] + "</a> by <I>@" + post['author'] + "</I></li>";
                     }
                     rejected_s += "</ul>";
-                    $('div#moderators_rejected').html(rejected_s);                    
+                    dom_rejected.html(rejected_s);                    
                     let rejected_cnt = result.total;                    
-                    let s = "<h4>Your Approved/Rejected Stats</h4>";
+                    let s = "<h4>Approved/Rejected Stats</h4>";
                     s += "<ul>";
                     s += "<li>Approved: <B>" + approved_cnt + "</B></li>";
                     s += "<li>Rejected: <B>" + rejected_cnt + "</B></li>";
                     s += "</ul>";
-                    $('div#moderators_stats').html(s);
+                    dom_stats.html(s);
                     let data = [];
                     data.push({"status": "approved", "count": approved_cnt});
                     data.push({"status": "rejected", "count": rejected_cnt});
-                    let chart = AmCharts.makeChart( "chart_moderators", {
+                    let chart = AmCharts.makeChart(div_of_chart, {
                         "type": "pie",
                         "theme": "light",
                         "dataProvider": data,
@@ -323,6 +323,7 @@ function getVP(id, dom) {
             } else {
                 dom.css("background-color", "green");
             }
+            dom.css("color", "white");
             dom.css("width", result + "%");
         },
         error: function(request, status, error) {
@@ -356,6 +357,95 @@ function getRep(id, dom) {
     });    
 }
 
+function updateModeratorsById(id, api, dom) {
+    logit("calling " + api);
+    $.ajax({
+        type: "GET",
+        url: api,
+        success: function(result) {
+            let arr = result.results;      
+            let s = "";
+            for (let i = arr.length - 1; i --; ) {
+                let row = arr[i];
+                if (row["account"] == id) {
+                    s + "<ul>";
+                    s += "<li><a href='https://steemit.com/@" + id + "'>@" + id + "</a>'s supervisor is <B><a target=_blank href='https://steemit.com/@" + row["referrer"] + "'>@" + row["referrer"] + "</B>.</a></li>";
+                    s += "<li>He/She has moderated <B>" + row["total_moderated"] + "</B> posts.</li>";
+                    s += "<li>He/She should receive rewards: <B>" + (row["should_receive_rewards"].toFixed(3)) + "</B> STEEM.</li>";
+                    s += "<li>Total paid rewards: <B>" + (row["total_paid_rewards_steem"].toFixed(3)) + "</B> STEEM.</li>";
+                    s += "<li>Percentage of Total Moderator Rewards: <B>" + (row["percentage_total_rewards_moderators"].toFixed(2)) + "</B>% .</li>";
+                    s += "</ul>";                    
+                }
+            }           
+            dom.html(s);
+        },
+        error: function(request, status, error) {
+            logit('Response: ' + request.responseText);
+            logit('Error: ' + error );
+            logit('Status: ' + status);
+        },
+        complete: function(data) {
+            logit("API Finished: Moderators: " + id + ".");
+        }             
+    });    
+}
+
+function getTeamMembers(id, api, dom) {
+    logit("calling " + api);
+    $.ajax({
+        type: "GET",
+        url: api,
+        success: function(result) {
+            let arr = result.results;                  
+            let referrer = "";
+            for (let i = arr.length - 1; i --; ) {
+                let row = arr[i];
+                if (row["account"] == id) {
+                    referrer = row["referrer"];
+                    break;
+                }
+            }
+            if (referrer != "") {
+                let s = "<table style='width:100%'>";
+                s += "<thead>";
+                s += "<tr><th>Team Member</th><th>Total Moderated</th><th>Percentage of Rewards</th></tr>";
+                s += "</thead>";
+                let cnt1 = 0;
+                let cnt2 = 0;
+                let arrlen = arr.length;
+                for (let i = 0; i < arrlen; ++ i) {
+                    let row = arr[i];
+                    if (row["referrer"] == referrer) {
+                        let tid = row["account"];
+                        s + "<tr>";
+                        s += "<td><a href='https://steemit.com/@" + tid + "'>@" + tid + "</a></a></td>";
+                        s += "<td>" + row["total_moderated"] + "</td>";
+                        s += "<td>" + (row["percentage_total_rewards_moderators"].toFixed(2)) + "%</td>";
+                        s += "</tr>";                    
+                        cnt1 += row["total_moderated"];
+                        cnt2 += row["percentage_total_rewards_moderators"];
+                    }
+                }
+                s += "<tfoot>";
+                s += "<tr>";
+                s += "<td><I>Total</I></td><td><I>" + cnt1 + "</I></td><td><I>" + cnt2.toFixed(2) + "</I></td></tr>";
+                s += "</tr>";
+                s += "</tfoot>";
+                s += "</table>";
+                dom.html(s);
+            }            
+        },
+        error: function(request, status, error) {
+            logit('Response: ' + request.responseText);
+            logit('Error: ' + error );
+            logit('Status: ' + status);
+        },
+        complete: function(data) {
+            logit("API Finished: Team Members: " + id + ".");
+        }             
+    });    
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // init tabs
     $(function() {
@@ -371,7 +461,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (validId(id)) {
                     getVP(id, $("div#account_vp"));
                     getRep(id, $("div#account_rep"));
-                    getModeratorStats("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=8");
+                    getModeratorStats("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=8", $("div#moderators_approved"), $("div#moderators_rejected"), $('div#moderators_stats'), "chart_moderators");
+                    getTeamMembers(id, "https://api.utopian.io/api/moderators", $("div#search_team_result"));
                 }
             }
             if (utopian["steemit_website"]) {
@@ -421,4 +512,22 @@ document.addEventListener('DOMContentLoaded', function() {
     updateModerators("https://api.utopian.io/api/moderators");
     // load unreviewed contributions
     updateUnreviewed("https://utopian.plus/unreviewedPosts.json");
+    // search a id
+    $('input#mod_id').keydown(function(e) {
+        if (e.keyCode == 13) {
+            $('button#search_id').click();
+        }
+    });
+    $('button#search_id').click(function() {
+        let id = $('input#mod_id').val().trim();
+        if (!validId(id)) {
+            alert("Doesn't seem a valid Steem ID.");
+        } else {
+            $("div#search_result_rep").html("<img id='loading' src='images/loading.gif' />");
+            getVP(id, $("div#search_result_vp"));
+            getRep(id, $("div#search_result_rep"));
+            getModeratorStats("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=8", $("div#search_result_approved"), $("div#search_result_rejected"), $('div#search_result_stats'), "search_result_chart");
+            updateModeratorsById(id, "https://api.utopian.io/api/moderators", $("div#search_result_stats2"));            
+        }        
+    });
 }, false);

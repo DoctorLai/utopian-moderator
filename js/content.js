@@ -17,7 +17,7 @@ $(function() {
 
 	// short cut Alt + S to switch between utopian and steemit
 	$(document).keydown(function(e) {
-	    if(e.key.toLowerCase() == "s" && e.altKey) {
+	    if (e.key.toLowerCase() == "s" && e.altKey) {
 	    	var url = document.location.href;
 	    	if (url.includes("utopian.io")) {	    		
 	    		document.location.href = url.replace("utopian.io", website);
