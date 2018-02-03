@@ -41,7 +41,7 @@ function updateUnreviewed(api) {
             data.push({"name": "video-tutorials", "category": "Video Tutorials", "posts":categories.video_tutorials});
             data.push({"name": "blog", "category": "Blog", "posts":categories.blog});
             data.push({"name": "tasks", "category": "Task Requests", "posts":categories.tasks});
-            data.push({"name": "social", "category": "Visibility", "posts":categories.social});
+            data.push({"name": "social", "category": "Visibility", "posts":categories.visibility});
             data.push({"name": "copywriting", "category": "Copywriting", "posts":categories.copywriting});
             let datalen = data.length;
             data.sort(function(a, b) {
