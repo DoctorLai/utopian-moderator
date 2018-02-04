@@ -498,6 +498,7 @@ function getTeamMembers(id, api, dom, div_of_chart) {
                 s += "<tfoot>";
                 s += "<tr>";
                 s += "<td><I>Total</I></td><td><I>" + cnt1 + "</I></td>"; 
+                s += "<td></td>";
                 s += "<td><I>" + sum_total_paid.toFixed(2) + "</I></td>";
                 s += "<td><I>" + sum_total_should.toFixed(2) + "</I></td>";
                 s += "<td><I>" + cnt2.toFixed(2) + "</I></td></tr>";
@@ -583,7 +584,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chrome.storage.sync.set({ 
             utopian_settings: utopian
         }, function() {
-            alert('Saved.');
+            alert('Settings Saved (Required: Reload Extension)');
         });
     });  
     // utopian-io
