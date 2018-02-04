@@ -6,9 +6,29 @@ const validId = (id) => {
     return id && pat.test(id);
 }
 
+// get steem profile url given id
+const getSteemUrl = (id) => {
+    return "<a target=_blank href='https://steemit.com/@" + id + "'>@" + id + "</a>";
+}
+
 const getChromeVersion = () => {
     var raw = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
     return raw ? parseInt(raw[2], 10) : false;
+}
+
+const readResponseAsText = (response) => {
+    return response.text();
+}
+
+const readResponseAsJSON = (response) => { 
+    return response.json(); 
+} 
+
+const validateResponse = (response) => { 
+    if (!response.ok) { 
+        throw Error(response.statusText); 
+    } 
+    return response; 
 }
 
 const logit = (msg) => {
@@ -17,6 +37,23 @@ const logit = (msg) => {
     let dom = $('textarea#about');
     let s = dom.val();
     dom.val(s + "\n" + n + ": " + msg);
+}
+
+// return the total number for status posts
+const getModeratedCount = (id, status) => {
+    return new Promise((resolve, reject) => {
+        let api = "https://api.utopian.io/api/posts/?moderator=" + id + "&status=" + status + "&skip=0&limit=1";    
+        fetch(api, {mode: 'cors'}).then(validateResponse).then(readResponseAsJSON).then(function(result) {
+            resolve(result.total);
+        });        
+    });
+}
+
+// async get two numbers
+const getRatio = async(id) => {
+    let accepted = await getModeratedCount(id, "reviewed");
+    let rejected = await getModeratedCount(id, "flagged");
+    return accepted / (accepted + rejected) * 100;
 }
 
 function updateUnreviewed(api) {
@@ -148,7 +185,11 @@ function updateModerators(api) {
                 if (row["account"] == id) {
                     s += "<h3>Hello " + id + "!</h3>";
                     s + "<ul>";
-                    s += "<li>Your supervisor is <B><a target=_blank href='https://steemit.com/@" + row["referrer"] + "'>@" + row["referrer"] + "</B>.</a></li>";
+                    if ((row["supermoderator"]) || (row["referrer"] == undefined)) {
+                        s += "<li>You are a Supervisor.</li>";                        
+                    } else {
+                        s += "<li>Your supervisor is <B>" + getSteemUrl(row["referrer"]) + "</B>.</a></li>";
+                    }                        
                     s += "<li>You have moderated <B>" + row["total_moderated"] + "</B> posts.</li>";
                     s += "<li>You should receive rewards: <B>" + (row["should_receive_rewards"].toFixed(3)) + "</B> STEEM.</li>";
                     s += "<li>Total paid rewards: <B>" + (row["total_paid_rewards_steem"].toFixed(3)) + "</B> STEEM.</li>";
@@ -369,7 +410,11 @@ function updateModeratorsById(id, api, dom) {
                 let row = arr[i];
                 if (row["account"] == id) {
                     s + "<ul>";
-                    s += "<li><a href='https://steemit.com/@" + id + "'>@" + id + "</a>'s supervisor is <B><a target=_blank href='https://steemit.com/@" + row["referrer"] + "'>@" + row["referrer"] + "</B>.</a></li>";
+                    if ((row["supermoderator"]) || (row["referrer"] == undefined)) {
+                        s += "<li>" + getSteemUrl(id) + " is a Supervisor.</li>";
+                    } else {                        
+                        s += "<li>" + getSteemUrl(id) + "'s supervisor is <B>" + getSteemUrl(row["referrer"]) + "</B>.</li>";
+                    }                        
                     s += "<li>He/She has moderated <B>" + row["total_moderated"] + "</B> posts.</li>";
                     s += "<li>He/She should receive rewards: <B>" + (row["should_receive_rewards"].toFixed(3)) + "</B> STEEM.</li>";
                     s += "<li>Total paid rewards: <B>" + (row["total_paid_rewards_steem"].toFixed(3)) + "</B> STEEM.</li>";
@@ -390,7 +435,7 @@ function updateModeratorsById(id, api, dom) {
     });    
 }
 
-function getTeamMembers(id, api, dom) {
+function getTeamMembers(id, api, dom, div_of_chart) {
     logit("calling " + api);
     $.ajax({
         type: "GET",
@@ -402,36 +447,77 @@ function getTeamMembers(id, api, dom) {
                 let row = arr[i];
                 if (row["account"] == id) {
                     referrer = row["referrer"];
+                    if ((!referrer) || (row["supermoderator"])) {
+                        referrer = id;
+                    }
                     break;
                 }
             }
             if (referrer != "") {
                 let s = "<table style='width:100%'>";
                 s += "<thead>";
-                s += "<tr><th>Team Member</th><th>Total Moderated</th><th>Percentage of Rewards</th></tr>";
+                s += "<tr><th>Team Member</th><th>Total Moderated</th><th>Approve Ratio %<th>Paid</th><th>Should Receive</th><th>Percentage of Rewards</th></tr>";
                 s += "</thead>";
                 let cnt1 = 0;
                 let cnt2 = 0;
+                let sum_total_paid = 0;
+                let sum_total_should = 0;
                 let arrlen = arr.length;
+                let data = [];                  
                 for (let i = 0; i < arrlen; ++ i) {
                     let row = arr[i];
-                    if (row["referrer"] == referrer) {
+                    if ((row["referrer"] == referrer) || (row["account"] == referrer)) {
                         let tid = row["account"];
+                        let total_paid_rewards_steem = row["total_paid_rewards_steem"] ? row["total_paid_rewards_steem"] : 0;
+                        let should_receive_rewards = row["should_receive_rewards"] ? row["should_receive_rewards"] : 0;
                         s + "<tr>";
-                        s += "<td><a href='https://steemit.com/@" + tid + "'>@" + tid + "</a></a></td>";
+                        let _tid  = tid.split('.')[0];
+                        s += "<td>" + getSteemUrl(tid) + "</td>";
                         s += "<td>" + row["total_moderated"] + "</td>";
+                        s += "<td><div id='approved_ratio_" + _tid + "'> </div></td>";
+                        getRatio(tid).then(r => {
+                            if (r <= 60) {
+                                $('div#approved_ratio_' + _tid).html("<B><font color=green>" + r.toFixed(2) + "</font></B>");
+                            } else if (r <= 80) {
+                                $('div#approved_ratio_' + _tid).html("<B><font color=orange>" + r.toFixed(2) + "</font></B>");
+                            } else {
+                                $('div#approved_ratio_' + _tid).html("<B><font color=red>" + r.toFixed(2) + "</font></B>");
+                            }
+                        });
+                        s += "<td>" + (total_paid_rewards_steem.toFixed(2)) + "</td>";
+                        s += "<td>" + (should_receive_rewards.toFixed(2)) + "</td>";
                         s += "<td>" + (row["percentage_total_rewards_moderators"].toFixed(2)) + "%</td>";
                         s += "</tr>";                    
                         cnt1 += row["total_moderated"];
                         cnt2 += row["percentage_total_rewards_moderators"];
+                        sum_total_paid += total_paid_rewards_steem;
+                        sum_total_should += should_receive_rewards;
+                        data.push({"account": tid, "moderated": row["total_moderated"]});
                     }
                 }
                 s += "<tfoot>";
                 s += "<tr>";
-                s += "<td><I>Total</I></td><td><I>" + cnt1 + "</I></td><td><I>" + cnt2.toFixed(2) + "</I></td></tr>";
+                s += "<td><I>Total</I></td><td><I>" + cnt1 + "</I></td>"; 
+                s += "<td><I>" + sum_total_paid.toFixed(2) + "</I></td>";
+                s += "<td><I>" + sum_total_should.toFixed(2) + "</I></td>";
+                s += "<td><I>" + cnt2.toFixed(2) + "</I></td></tr>";
                 s += "</tr>";
                 s += "</tfoot>";
                 s += "</table>";
+                let chart = AmCharts.makeChart(div_of_chart, {
+                    "type": "pie",
+                    "theme": "light",
+                    "dataProvider": data,
+                    "startDuration": 0,
+                    "valueField": "moderated",
+                    "titleField": "account",
+                    "balloon":{
+                      "fixedPosition": true
+                    },
+                    "export": {
+                      "enabled": false
+                    }
+                });                 
                 dom.html(s);
             }            
         },
@@ -459,10 +545,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 let id = utopian["steemit_id"].trim();
                 $('input#steemit_id').val(id);  
                 if (validId(id)) {
+                    $('input#contributor_id').val(id);  
                     getVP(id, $("div#account_vp"));
                     getRep(id, $("div#account_rep"));
                     getModeratorStats("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=8", $("div#moderators_approved"), $("div#moderators_rejected"), $('div#moderators_stats'), "chart_moderators");
-                    getTeamMembers(id, "https://api.utopian.io/api/moderators", $("div#search_team_result"));
+                    getTeamMembers(id, "https://api.utopian.io/api/moderators", $("div#search_team_result"), search_result_chart_members);
                 }
             }
             if (utopian["steemit_website"]) {
@@ -512,12 +599,13 @@ document.addEventListener('DOMContentLoaded', function() {
     updateModerators("https://api.utopian.io/api/moderators");
     // load unreviewed contributions
     updateUnreviewed("https://utopian.plus/unreviewedPosts.json");
-    // search a id
+    // search a id when press Enter
     $('input#mod_id').keydown(function(e) {
         if (e.keyCode == 13) {
             $('button#search_id').click();
         }
     });
+    // find user's details.
     $('button#search_id').click(function() {
         let id = $('input#mod_id').val().trim();
         if (!validId(id)) {
