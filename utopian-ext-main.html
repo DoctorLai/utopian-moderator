@@ -18,8 +18,9 @@
     <link rel="stylesheet" href="css/export.css" type="text/css" media="all" />
     <link rel="stylesheet" href="css/jquery-ui.css" />
     <script src="js/jquery-ui.js"></script>     
+    <script src="js/steem.min.js"></script>     
     <style>
-    .ext-window {width: 750px;}
+    .ext-window {width: 770px;}
     textarea {width: 100%;}
     img {max-width: 100%;}
     .chart {width: 100%; height: 570px;}
@@ -35,7 +36,9 @@
         <li><a href="#tabs-moderators">Moderator</a></li>
         <li><a href="#tabs-supervisor">Supervisor</a></li>
         <li><a href="#tabs-chart">Chart</a></li>
+        <li><a href="#tabs-posts">Posts</a></li>
         <li><a href="#tabs-setting">Setting</a></li>
+        <li><a href="#tabs-tools">Tools</a></li>
         <li><a href="#tabs-log">Log</a></li>        
       </ul>
       <div id="tabs-general">
@@ -84,7 +87,13 @@
         <div id='chartdiv_moderators_count' class="chart"> </div>
         <h4>Top Moderators by total_paid_steem</h4>
         <div id='chartdiv_moderators_total_paid' class="chart"> </div>        
-      </div>            
+      </div>    
+      <div id="tabs-posts">    
+        <h4>@utopian-io</h4>
+        <div id="info"> </div>
+        <h4>Latest Posts from @utopian-io</h4>
+        <ul id="posts"> </ul>
+      </div>                 
       <div id="tabs-setting">
         <p><h4>Your SteemId ID: </h4><input type='text' class='form-control' id='steemit_id' name='steemit_id' placeholder="Your Steem ID without @" value=''></p>
         <p>
@@ -100,6 +109,12 @@
         </p>
         <p><button class='form-control' style='width: 70px' id='save_id_btn'>Save</button></p>
       </div>
+      <div id="tabs-tools">    
+        <h4>Reputation Calculator</h4>
+        <p><input type='number' class='form-control' id='steemit_reputation' name='steemit_reputation' placeholder="Raw Reputation Value" value=''></p>
+        <p><button class='form-control' style='width: 110px' id='btn_rep'>Calculate</button></p>
+        <div id='rep_result'> </div>
+      </div>       
       <div id="tabs-log">
         <h4>Proudly brought to you by <a target=_blank href="https://steemit.com/@justyy">@justyy</a></h4>
         <textarea readonly class='form-control' rows=15 id='about'>           

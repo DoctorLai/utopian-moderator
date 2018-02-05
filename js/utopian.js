@@ -533,6 +533,40 @@ function getTeamMembers(id, api, dom, div_of_chart) {
     });    
 }
 
+const getPosts = (id, dom, num = 10) => {
+    steem.api.setOptions({ url: 'https://api.steemit.com' });
+
+    var query = {
+        tag: id,
+        limit: num
+    };
+
+    steem.api.getDiscussionsByBlog(query, function (err, discussions) {
+        console.log(err, discussions);
+        if (!err) {
+            discussions.map(function (discussion) {
+                var li = document.createElement('li');
+                li.innerHTML = "<font color=gray><I>" + discussion.created + "</I></font>: <a target=_blank href='https://steemit.com/@" + discussion.author + "/" + discussion.permlink + "'>" + discussion.title + "</a>" + " @" + discussion.author;
+                dom.append(li);
+            });
+        }
+    });
+}
+
+const getData = (id, dom, item) => {
+    steem.api.setOptions({ url: 'https://api.steemit.com' });
+
+    steem.api.getAccounts([id], function(err, result) {
+        let s = "<ul>";
+        console.log(result);
+        $.each(item, function(index, value) {
+            s += "<li><i>" + value + "</i>: " + result[0][value] + "</li>";
+        });
+        s += "</ul>";
+        dom.html(s);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // init tabs
     $(function() {
@@ -619,4 +653,23 @@ document.addEventListener('DOMContentLoaded', function() {
             updateModeratorsById(id, "https://api.utopian.io/api/moderators", $("div#search_result_stats2"));            
         }        
     });
+    // get latest utopian posts
+    getPosts("utopian-io", $("ul#posts"), 20);   
+    // get basic information
+    getData("utopian-io", $("div#info"), [
+        "name",
+        "balance",
+        "sbd_balance",
+        "last_vote_time",
+        "post_count",
+        "delegated_vesting_shares",
+        "voting_power",
+        "reputation"    
+    ]);
+    // rep calculator
+    $('button#btn_rep').click(function() {
+        let rep = parseInt($('input#steemit_reputation').val());
+        let reputation = steem.formatter.reputation(rep);
+        $('div#rep_result').html("Reputation of " + rep + " = <B>" + reputation + "</B>");
+    })
 }, false);

@@ -1,4 +1,4 @@
-$(function() {
+(function($) {
 	let id;
 	let website;
 
@@ -28,4 +28,4 @@ $(function() {
 	    	}    	
 	    }
 	});
-})();
+})(jQuery);
