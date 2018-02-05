@@ -32,6 +32,8 @@ https://chrome.google.com/webstore/detail/utopian-moderator-supervi/dcjdbldgiibo
 ![](https://steemitimages.com/0x0/https://res.cloudinary.com/hpiynhbhq/image/upload/v1517614807/ohclcpeihsuia9etmxex.png)
 ![](https://steemitimages.com/0x0/https://res.cloudinary.com/hpiynhbhq/image/upload/v1517614931/nrjqtrwenwyqwpvptzso.png)
 ![](https://helloacm.com/wp-content/uploads/2018/02/utopian-chrome-extension-accept-rate-pie-chart.jpg)
+![](https://helloacm.com/wp-content/uploads/2018/02/utopian-chrome-extension-posts-tab.jpg)
+![](https://helloacm.com/wp-content/uploads/2018/02/utopian-chrome-extension-reputation-calculator.jpg)
 
 # Roadmap
 I am adding the following features in the next coming versions:
@@ -47,6 +49,7 @@ I am adding the following features in the next coming versions:
 - v0.0.5 [Adding Unreviewed Contributions + List of Approved/Rejected Posts to Utopian Chrome Extension!](https://steemit.com/utopian-io/@justyy/adding-unreviewed-contributions-list-of-approved-rejected-posts-to-utopian-chrome-extension)
 - v0.0.6 [Adding Supervisor Tab to Utopian Moderator Chrome Extension!](https://steemit.com/utopian-io/@justyy/adding-supervisor-tab-to-utopian-moderator-chrome-extension)
 - v0.0.7 [Utopian Moderator Chrome Extension: Improved Supervisor Tab by Showing Acceptance Rate and Pie Chart](https://steemit.com/utopian-io/@justyy/utopian-moderator-chrome-extension-improved-supervisor-tab-by-showing-acceptance-rate-and-pie-chart)
+- v0.0.8 [Make Utopian Moderator Chrome Extension Perfect by Adding Posts and Tools Tab](https://steemit.com/utopian-io/@justyy/make-utopian-moderator-chrome-extension-perfect-by-adding-posts-and-tools-tab)
 
 # Blog Posts
 - v0.0.1 [The First Utopian Moderator Chrome Extension](https://helloacm.com/the-first-utopian-moderator-chrome-extension/)
@@ -56,3 +59,4 @@ I am adding the following features in the next coming versions:
 - v0.0.5 [Adding Unreviewed Contributions + List of Approved/Rejected Posts to Utopian Chrome Extension!](https://helloacm.com/adding-unreviewed-contributions-list-of-approved-rejected-posts-to-utopian-chrome-extension/)
 - v0.0.6 [Adding Supervisor Tab to Utopian Moderator Chrome Extension!](https://helloacm.com/adding-supervisor-tab-to-utopian-moderator-chrome-extension/)
 - v0.0.7 [Utopian Moderator Chrome Extension: Improved Supervisor Tab by Showing Acceptance Rate and Pie Chart](https://helloacm.com/utopian-moderator-chrome-extension-improved-supervisor-tab-by-showing-acceptance-rate-and-pie-chart/)
+- v0.0.8 [Make Utopian Moderator Chrome Extension Perfect by Adding Posts and Tools Tab](https://helloacm.com/make-utopian-moderator-chrome-extension-perfect-by-adding-posts-and-tools-tab/)
