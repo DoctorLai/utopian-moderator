@@ -1,5 +1,7 @@
 'use strict';
 
+steem.api.setOptions({ url: 'https://api.steemit.com' });
+
 const validId = (id) => {
     id = id.trim();
     let pat = /^[a-z0-9\-\.]+$/g;
@@ -350,13 +352,11 @@ function getModeratorStats(api, dom_approved, dom_rejected, dom_stats, div_of_ch
 }
 
 function getVP(id, dom) {
-    let api = 'https://helloacm.com/api/steemit/account/vp/?id=' + id;
-    logit("calling " + api);
-    $.ajax({
-        type: "GET",
-        url: api,
-        success: function(result) {
-            dom.html("<i>@" + id + "'s Voting Power is</i> <B>" + result + "%</B>");
+	steem.api.getAccounts([id], function(err, response) {
+    	if(!err)
+    	{
+    		let result = (response[0].voting_power)/100;
+    		dom.html("<i>@" + id + "'s Voting Power is</i> <B>" + result + "%</B>");
             if (result < 30) {
                 dom.css("background-color", "red");
             } else if (result < 60) {
@@ -366,36 +366,25 @@ function getVP(id, dom) {
             }
             dom.css("color", "white");
             dom.css("width", result + "%");
-        },
-        error: function(request, status, error) {
-            logit('Response: ' + request.responseText);
-            logit('Error: ' + error );
-            logit('Status: ' + status);
-        },
-        complete: function(data) {
-            logit("API Finished: VP + " + id);
-        }             
-    });    
+    		logit("Data fetched from Steeem API");
+		}
+		else
+		{
+			logit(err);
+		}
+	});   
 }
 
 function getRep(id, dom) {
-    let api = 'https://helloacm.com/api/steemit/account/reputation/?id=' + id;
-    logit("calling " + api);
-    $.ajax({
-        type: "GET",
-        url: api,
-        success: function(result) {
-            dom.html("<i>@" + id + "'s Reputation is</i> <B>" + result + "</B>");
-        },
-        error: function(request, status, error) {
-            logit('Response: ' + request.responseText);
-            logit('Error: ' + error );
-            logit('Status: ' + status);
-        },
-        complete: function(data) {
-            logit("API Finished: Reputation - " + id);
-        }             
-    });    
+	steem.api.getAccounts([id], function(err, response) {
+		if(!err)
+		{
+			var result = steem.formatter.reputation(response[0].reputation);
+			console.log(result);
+		    dom.html("<i>@" + id + "'s Reputation is</i> <B>" + result + "</B>");
+			logit("API Finished: Reputation - " + id);
+		}
+	});
 }
 
 function updateModeratorsById(id, api, dom) {
