@@ -380,9 +380,9 @@ function getRep(id, dom) {
 		if(!err)
 		{
 			var result = steem.formatter.reputation(response[0].reputation);
-			console.log(result);
-		    dom.html("<i>@" + id + "'s Reputation is</i> <B>" + result + "</B>");
-			logit("API Finished: Reputation - " + id);
+			var steemPower = steem.formatter.estimateAccountValue(response[0]);
+		    steemPower.then(value => dom.html("<i>@" + id + "'s Reputation is</i> <B>" + result + "</B><br><i>@" + id + "'s Total Account Value is</i> <B>$" + value + "</B>"));
+		   logit("API Finished: Reputation - " + id);
 		}
 	});
 }
