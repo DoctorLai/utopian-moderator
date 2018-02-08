@@ -20,7 +20,7 @@
     <script src="js/steem.min.js"></script>
     <script src="js/utopian.js"></script> 
     <style>
-    .ext-window {width: 770px;}
+    .ext-window {width: 850px;}
     textarea {width: 100%;}
     img {max-width: 100%;}
     .chart {width: 100%; height: 570px;}
@@ -37,6 +37,7 @@
         <li><a href="#tabs-supervisor">Supervisor</a></li>
         <li><a href="#tabs-chart">Chart</a></li>
         <li><a href="#tabs-posts">Posts</a></li>
+        <li><a href="#tabs-stats">Stats</a></li>
         <li><a href="#tabs-setting">Setting</a></li>
         <li><a href="#tabs-tools">Tools</a></li>
         <li><a href="#tabs-log">Log</a></li>        
@@ -93,7 +94,11 @@
         <div id="info"> </div>
         <h4>Latest Posts from @utopian-io</h4>
         <ul id="posts"> </ul>
-      </div>                 
+      </div>   
+      <div id="tabs-stats">    
+        <h4>Statistics</h4>
+        <div id="stats"> </div>
+      </div>                      
       <div id="tabs-setting">
         <p><h4>Your SteemId ID: </h4><input type='text' class='form-control' id='steemit_id' name='steemit_id' placeholder="Your Steem ID without @" value=''></p>
         <p>
@@ -103,6 +108,22 @@
             <option value='busy.org'>busy.org</option>
           </select>
         </p>
+        <p>
+          <h4>Nodes</h4>
+          <select id='nodes' class='form-control'>
+            <option value='https://api.steemit.com'>https://api.steemit.com</option>
+            <option value='https://rpc.buildteam.io'>https://rpc.buildteam.io</option>
+            <option value='https://gtg.steem.house:8090'>https://gtg.steem.house:8090</option>
+            <option value='https://steemd.minnowsupportproject.org'>https://steemd.minnowsupportproject.org</option>
+            <option value='https://rpc.steemliberator.com'>https://rpc.steemliberator.com</option>
+            <option value='https://seed.bitcoiner.me'>https://seed.bitcoiner.me</option>
+            <option value='https://steemd.pevo.science'>https://steemd.pevo.science</option>
+            <option value='https://steemd.privex.io'>https://steemd.privex.io</option>
+            <option value='https://seed.bitcoiner.me'>https://seed.bitcoiner.me</option>
+            <option value='https://steemd.steemitdev.com'>https://steemd.steemitdev.com</option>
+            <option value='https://steemd.steemitstage.com'>https://steemd.steemitstage.com</option>
+          </select>
+        </p>        
         <p>
           <h4>Additional ID's (Tab General)</h4>
           <textarea class="form-control" id="friends" placeholder="Enter Your Friends' IDs one ID per line" rows=10></textarea>

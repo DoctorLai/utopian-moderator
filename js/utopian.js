@@ -1,11 +1,38 @@
 'use strict';
 
-steem.api.setOptions({ url: 'https://api.steemit.com' });
+// default node
+const default_node = "https://api.steemit.com";
+steem.api.setOptions({ url: default_node });
 
+// get Node
+const getNode = () => {
+    return $('select#nodes').val();
+}
+
+// check if valid steem id
 const validId = (id) => {
     id = id.trim();
     let pat = /^[a-z0-9\-\.]+$/g;
     return id && pat.test(id);
+}
+
+// dots can't be used as a valid HTML div identifier
+const getIdForDiv = (id) => {
+    return id.replace(".", "");
+}
+
+// try best to return a valid steem id
+const prepareId = (id) => {
+    return id.replace("@", "").trim().toLowerCase();
+}
+
+// button click when press enter in text
+const textPressEnterButtonClick = (text, button) => {
+    text.keydown(function(e) {
+        if (e.keyCode == 13) {
+            button.click();
+        }
+    });        
 }
 
 // get steem profile url given id
@@ -13,19 +40,23 @@ const getSteemUrl = (id) => {
     return "<a target=_blank href='https://steemit.com/@" + id + "'>@" + id + "</a>";
 }
 
+// get chrome version
 const getChromeVersion = () => {
     var raw = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
     return raw ? parseInt(raw[2], 10) : false;
 }
 
+// read as text
 const readResponseAsText = (response) => {
     return response.text();
 }
 
+// read as json
 const readResponseAsJSON = (response) => { 
     return response.json(); 
 } 
 
+// check if valid response
 const validateResponse = (response) => { 
     if (!response.ok) { 
         throw Error(response.statusText); 
@@ -33,6 +64,7 @@ const validateResponse = (response) => {
     return response; 
 }
 
+// write msg in the log
 const logit = (msg) => {
     let d = new Date();
     let n = d.toLocaleTimeString();
@@ -167,6 +199,60 @@ function updateStats(api) {
         }             
     });    
 }
+
+function getStats(api, dom) {
+    logit("calling " + api);
+    $.ajax({
+        type: "GET",
+        url: api,
+        success: function(result) {
+            let s = "<ul>";
+            let stats = result.stats;
+            s += "<li>Bot is Voting: <B>" + stats['bot_is_voting'] + "</B></li>";
+            s += "<li>Total Paid Rewards: " + stats['total_paid_rewards'] + " STEEM</li>";
+            s += "<li>Total Pending Rewards: " + stats['total_pending_rewards'] + " STEEM</li>";
+            s += "<li>Total Paid Authors: " + stats['total_paid_authors'] + " STEEM</li>";
+            s += "<li>Total Paid Curators: " + stats['total_paid_curators'] + " STEEM</li>";            
+            s += "<li>Last Limit Comment Benefactor: " + stats['last_limit_comment_benefactor'] + "</li>";
+            s += "<li>Total Pending Last Post Date: " + stats['stats_total_pending_last_post_date'] + "</li>";
+            s += "<li>Total Paid Last Post Date: " + stats['stats_total_paid_last_post_date'] + "</li>";
+            s += "<li>Status Total Moderated: " + stats['stats_total_moderated'] + "</li>";
+            s += "</ul>";
+            s += "<h4>Categories</h4>";
+            s += "<ul>";
+            let cats = stats.categories;
+            let keys = Object.keys(cats);
+            let keylen = keys.length;
+            for (let i = 0; i < keylen; i ++) {
+                s += "<li>";
+                s += "<h5>" + keys[i] + "</h5>";
+                let cat = cats[keys[i]];
+                let catkeys = Object.keys(cat);
+                let catkeylen = catkeys.length;
+                s += "<ul>";
+                for (let j = 0; j < catkeylen; j ++) {
+                    let att = cat[catkeys[j]];
+                    s += "<li><i>" + catkeys[j] + "</i>: " + att + "</li>";
+                }
+                s += "</ul>";
+                s +="</li>";
+            }
+            s += "</ul>";
+            dom.html(s);
+        },
+        error: function(request, status, error) {
+            logit('Response: ' + request.responseText);
+            logit('Error: ' + error );
+            logit('Status: ' + status);
+        },
+        complete: function(data) {
+            logit("API Finished: Moderators.");
+            $('img#loading-chart').hide();
+            $('img#loading-moderators').hide();
+        }             
+    });    
+}
+
 
 function updateModerators(api) {
     logit("calling " + api);
@@ -351,11 +437,13 @@ function getModeratorStats(api, dom_approved, dom_rejected, dom_stats, div_of_ch
     });    
 }
 
-function getVP(id, dom) {
+function getVP(id, dom, server) {
+    server = server || default_node;
+    steem.api.setOptions({ url: server });
+
 	steem.api.getAccounts([id], function(err, response) {
-    	if(!err)
-    	{
-    		let result = (response[0].voting_power)/100;
+    	if (!err) {
+    		let result = (response[0].voting_power) / 100;
     		dom.html("<i>@" + id + "'s Voting Power is</i> <B>" + result + "%</B>");
             if (result < 30) {
                 dom.css("background-color", "red");
@@ -366,24 +454,28 @@ function getVP(id, dom) {
             }
             dom.css("color", "white");
             dom.css("width", result + "%");
-    		logit("Data fetched from Steeem API");
-		}
-		else
-		{
-			logit(err);
+    		logit("API Finished: VP- " + id);
+		} else {
+			logit("API error: " + err);
 		}
 	});   
 }
 
-function getRep(id, dom) {
+function getRep(id, dom, server) {
+    server = server || default_node;
+    steem.api.setOptions({ url: server });
+
 	steem.api.getAccounts([id], function(err, response) {
-		if(!err)
-		{
-			var result = steem.formatter.reputation(response[0].reputation);
-			var steemPower = steem.formatter.estimateAccountValue(response[0]);
-		    steemPower.then(value => dom.html("<i>@" + id + "'s Reputation is</i> <B>" + result + "</B><br><i>@" + id + "'s Total Account Value is</i> <B>$" + value + "</B>"));
-		   logit("API Finished: Reputation - " + id);
-		}
+		if (!err){
+			let result = steem.formatter.reputation(response[0].reputation);
+			let av = steem.formatter.estimateAccountValue(response[0]);
+		    av.then(value => {
+                dom.html("<i>@" + id + "'s Reputation is</i> <B>" + result + "</B><br><i>@" + id + "'s Total Account Value is</i> <B>$" + value + "</B>");
+            });
+            logit("API Finished: Reputation/Account Value - " + id);
+		} else {
+            logit("API error: " + err);
+        }
 	});
 }
 
@@ -522,8 +614,9 @@ function getTeamMembers(id, api, dom, div_of_chart) {
     });    
 }
 
-const getPosts = (id, dom, num = 10) => {
-    steem.api.setOptions({ url: 'https://api.steemit.com' });
+const getPosts = (id, dom, server, num = 10) => {
+    server = server || default_node;
+    steem.api.setOptions({ url: server });
 
     var query = {
         tag: id,
@@ -542,8 +635,9 @@ const getPosts = (id, dom, num = 10) => {
     });
 }
 
-const getData = (id, dom, item) => {
-    steem.api.setOptions({ url: 'https://api.steemit.com' });
+const getData = (id, dom, item, server) => {
+    server = server || default_node;
+    steem.api.setOptions({ url: server });
 
     steem.api.getAccounts([id], function(err, result) {
         let s = "<ul>";
@@ -561,17 +655,19 @@ document.addEventListener('DOMContentLoaded', function() {
     $(function() {
         $( "#tabs" ).tabs();
     });
+    // set default node
+    $('select#nodes').val(default_node);
     // load steem id
     chrome.storage.sync.get('utopian_settings', function(data) {
         if (data && data.utopian_settings) {
             let utopian = data.utopian_settings;
             if (utopian["steemit_id"]) {
-                let id = utopian["steemit_id"].trim();
+                let id = prepareId(utopian["steemit_id"]);
                 $('input#steemit_id').val(id);  
                 if (validId(id)) {
                     $('input#contributor_id').val(id);  
-                    getVP(id, $("div#account_vp"));
-                    getRep(id, $("div#account_rep"));
+                    getVP(id, $("div#account_vp"), utopian['nodes']);
+                    getRep(id, $("div#account_rep"), utopian['nodes']);
                     getModeratorStats("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=8", $("div#moderators_approved"), $("div#moderators_rejected"), $('div#moderators_stats'), "chart_moderators");
                     getTeamMembers(id, "https://api.utopian.io/api/moderators", $("div#search_team_result"), search_result_chart_members);
                 }
@@ -586,24 +682,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 friends = friends.split("\n");
                 let len = friends.length;
                 for (let i = 0; i < len; ++ i) {
-                    let id = friends[i];
+                    let id = prepareId(friends[i]);
                     if (validId(id)) {
-                        $("div#friends_vp_rep").append("<div id='account_vp_100_" + id + "' class='vpbar'><div id='account_vp_" + id + "' class='vp'> </div> </div><div id='account_rep_" + id + "'> </div>");
-                        getRep(id, $('div#account_rep_' + id));
-                        getVP(id, $('div#account_vp_' + id));
+                        let tid = getIdForDiv(id);
+                        $("div#friends_vp_rep").append("<div id='account_vp_100_" + tid + "' class='vpbar'><div id='account_vp_" + tid + "' class='vp'> </div> </div><div id='account_rep_" + tid + "'> </div>");
+                        getRep(id, $('div#account_rep_' + tid), utopian['nodes']);
+                        getVP(id, $('div#account_vp_' + tid), utopian['nodes']);
                     }
                 }                
             }
+            // get node infor
+            $('select#nodes').val(utopian['nodes']);            
         }
     });
     $('button#save_id_btn').click(function() {
         let id = $('input#steemit_id').val().trim();
         let website = $('select#steemit_website').val();
         let friends = $('textarea#friends').val();
+        let nodes = $('select#nodes').val();
         let utopian = {};
         utopian['steemit_id'] = id;
         utopian['steemit_website'] = website;
         utopian['friends'] = friends;
+        utopian['nodes'] = nodes;
         chrome.storage.sync.set({ 
             utopian_settings: utopian
         }, function() {
@@ -611,8 +712,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });  
     // utopian-io
-    getVP("utopian-io", $("div#account_utopian_vp"));
-    getRep("utopian-io", $("div#account_utopian_rep"));    
+    getVP("utopian-io", $("div#account_utopian_vp"), getNode());
+    getRep("utopian-io", $("div#account_utopian_rep"), getNode());    
     // about
     let manifest = chrome.runtime.getManifest();    
     let app_name = manifest.name + " v" + manifest.version;
@@ -624,26 +725,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // load unreviewed contributions
     updateUnreviewed("https://utopian.plus/unreviewedPosts.json");
     // search a id when press Enter
-    $('input#mod_id').keydown(function(e) {
-        if (e.keyCode == 13) {
-            $('button#search_id').click();
-        }
-    });
+    textPressEnterButtonClick($('input#mod_id'), $('button#search_id'));
     // find user's details.
     $('button#search_id').click(function() {
-        let id = $('input#mod_id').val().trim();
+        let id = prepareId($('input#mod_id').val());
         if (!validId(id)) {
             alert("Doesn't seem a valid Steem ID.");
         } else {
             $("div#search_result_rep").html("<img id='loading' src='images/loading.gif' />");
-            getVP(id, $("div#search_result_vp"));
-            getRep(id, $("div#search_result_rep"));
+            getVP(id, $("div#search_result_vp"), getNode());
+            getRep(id, $("div#search_result_rep"), getNode());
             getModeratorStats("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=8", $("div#search_result_approved"), $("div#search_result_rejected"), $('div#search_result_stats'), "search_result_chart");
             updateModeratorsById(id, "https://api.utopian.io/api/moderators", $("div#search_result_stats2"));            
         }        
     });
     // get latest utopian posts
-    getPosts("utopian-io", $("ul#posts"), 20);   
+    getPosts("utopian-io", $("ul#posts"), getNode(), 20);   
     // get basic information
     getData("utopian-io", $("div#info"), [
         "name",
@@ -654,11 +751,12 @@ document.addEventListener('DOMContentLoaded', function() {
         "delegated_vesting_shares",
         "voting_power",
         "reputation"    
-    ]);
+    ], getNode());
     // rep calculator
     $('button#btn_rep').click(function() {
         let rep = parseInt($('input#steemit_reputation').val());
         let reputation = steem.formatter.reputation(rep);
         $('div#rep_result').html("Reputation of " + rep + " = <B>" + reputation + "</B>");
-    })
+    });
+    getStats("https://api.utopian.io/api/stats", $("div#stats"));        
 }, false);
