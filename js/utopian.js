@@ -9,61 +9,6 @@ const getNode = () => {
     return $('select#nodes').val();
 }
 
-// check if valid steem id
-const validId = (id) => {
-    id = id.trim();
-    let pat = /^[a-z0-9\-\.]+$/g;
-    return id && pat.test(id);
-}
-
-// dots can't be used as a valid HTML div identifier
-const getIdForDiv = (id) => {
-    return id.replace(".", "");
-}
-
-// try best to return a valid steem id
-const prepareId = (id) => {
-    return id.replace("@", "").trim().toLowerCase();
-}
-
-// button click when press enter in text
-const textPressEnterButtonClick = (text, button) => {
-    text.keydown(function(e) {
-        if (e.keyCode == 13) {
-            button.click();
-        }
-    });        
-}
-
-// get steem profile url given id
-const getSteemUrl = (id) => {
-    return "<a target=_blank href='https://steemit.com/@" + id + "'>@" + id + "</a>";
-}
-
-// get chrome version
-const getChromeVersion = () => {
-    var raw = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
-    return raw ? parseInt(raw[2], 10) : false;
-}
-
-// read as text
-const readResponseAsText = (response) => {
-    return response.text();
-}
-
-// read as json
-const readResponseAsJSON = (response) => { 
-    return response.json(); 
-} 
-
-// check if valid response
-const validateResponse = (response) => { 
-    if (!response.ok) { 
-        throw Error(response.statusText); 
-    } 
-    return response; 
-}
-
 // write msg in the log
 const logit = (msg) => {
     let d = new Date();
@@ -145,7 +90,7 @@ function updateUnreviewed(api) {
             logit('Status: ' + status);
         },
         complete: function(data) {
-            logit("API Finished: unreviewed.");
+            logit("API Finished: " + api);
             $('img#loading-unreviewed').hide();
         }             
     });    
@@ -194,12 +139,13 @@ function updateStats(api) {
             logit('Status: ' + status);
         },
         complete: function(data) {
-            logit("API Finished: Stats.");
+            logit("API Finished: " + api);
             $('img#loading').hide();
         }             
     });    
 }
 
+// get utopian statistics
 function getStats(api, dom) {
     logit("calling " + api);
     $.ajax({
@@ -246,13 +192,12 @@ function getStats(api, dom) {
             logit('Status: ' + status);
         },
         complete: function(data) {
-            logit("API Finished: Moderators.");
+            logit("API Finished: " + api);
             $('img#loading-chart').hide();
             $('img#loading-moderators').hide();
         }             
     });    
 }
-
 
 function updateModerators(api) {
     logit("calling " + api);
@@ -352,7 +297,7 @@ function updateModerators(api) {
             logit('Status: ' + status);
         },
         complete: function(data) {
-            logit("API Finished: Moderators.");
+            logit("API Finished: " + api);
             $('img#loading-chart').hide();
             $('img#loading-moderators').hide();
         }             
@@ -373,7 +318,7 @@ function getModeratorStats(api, dom_approved, dom_rejected, dom_stats, div_of_ch
             let approved_len = result.results.length;
             for (let i = 0; i < approved_len; ++ i) {
                 let post = result.results[i];
-                approved_s += "<li><a target=_blank href='https://utopian.io/utopian-io/@" + post['author'] + '/' + post['permlink'] + "'>" + post['title'] + "</a> by <I>@" + post['author'] + "</I></li>";
+                approved_s += "<li><a target=_blank href='https://utopian.io/utopian-io/@" + post['author'] + '/' + post['permlink'] + "'>" + escapeHtml(post['title']) + "</a> by <I>@" + post['author'] + "</I></li>";
             }
             approved_s += "</ul>";
             dom_approved.html(approved_s);
@@ -387,7 +332,7 @@ function getModeratorStats(api, dom_approved, dom_rejected, dom_stats, div_of_ch
                     let rejected_len = result.results.length;
                     for (let i = 0; i < rejected_len; ++ i) {
                         let post = result.results[i];
-                        rejected_s += "<li><a target=_blank href='https://utopian.io/utopian-io/@" + post['author'] + '/' + post['permlink'] + "'>" + post['title'] + "</a> by <I>@" + post['author'] + "</I></li>";
+                        rejected_s += "<li><a target=_blank href='https://utopian.io/utopian-io/@" + post['author'] + '/' + post['permlink'] + "'>" + escapeHtml(post['title']) + "</a> by <I>@" + post['author'] + "</I></li>";
                     }
                     rejected_s += "</ul>";
                     dom_rejected.html(rejected_s);                    
@@ -422,7 +367,7 @@ function getModeratorStats(api, dom_approved, dom_rejected, dom_stats, div_of_ch
                     logit('Status: ' + status);
                 },
                 complete: function(data) {
-                    logit("API Finished: Get Rejected Number.");
+                    logit("API Finished: " + api_rejected);
                 }             
             });             
         },
@@ -432,7 +377,7 @@ function getModeratorStats(api, dom_approved, dom_rejected, dom_stats, div_of_ch
             logit('Status: ' + status);
         },
         complete: function(data) {
-            logit("API Finished: Get Approved Number.");
+            logit("API Finished: " + api_approved);
         }             
     });    
 }
@@ -454,9 +399,9 @@ function getVP(id, dom, server) {
             }
             dom.css("color", "white");
             dom.css("width", result + "%");
-    		logit("API Finished: VP- " + id);
+    		logit("API Finished: VP: " + id);
 		} else {
-			logit("API error: " + err);
+			logit("API error: VP: " + id + ": " + err);
 		}
 	});   
 }
@@ -474,7 +419,7 @@ function getRep(id, dom, server) {
             });
             logit("API Finished: Reputation/Account Value - " + id);
 		} else {
-            logit("API error: " + err);
+            logit("API error: " + id + ": " + err);
         }
 	});
 }
@@ -511,7 +456,7 @@ function updateModeratorsById(id, api, dom) {
             logit('Status: ' + status);
         },
         complete: function(data) {
-            logit("API Finished: Moderators: " + id + ".");
+            logit("API Finished: " + api);
         }             
     });    
 }
@@ -609,7 +554,7 @@ function getTeamMembers(id, api, dom, div_of_chart) {
             logit('Status: ' + status);
         },
         complete: function(data) {
-            logit("API Finished: Team Members: " + id + ".");
+            logit("API Finished: " + api);
         }             
     });    
 }
@@ -624,7 +569,6 @@ const getPosts = (id, dom, server, num = 10) => {
     };
 
     steem.api.getDiscussionsByBlog(query, function (err, discussions) {
-        console.log(err, discussions);
         if (!err) {
             discussions.map(function (discussion) {
                 var li = document.createElement('li');
@@ -643,11 +587,71 @@ const getData = (id, dom, item, server) => {
         let s = "<ul>";
         console.log(result);
         $.each(item, function(index, value) {
-            s += "<li><i>" + value + "</i>: " + result[0][value] + "</li>";
+            if (value == 'reputation') {
+                s += "<li><i>" + value + "</i>: " + result[0][value] + ' (<B>' + steem.formatter.reputation(result[0][value]) + "</B>)</li>";
+            } else if (value == 'voting_power') {
+                s += "<li><i>" + value + "</i>: " + (result[0][value]/100) + "%</li>";
+            } else {
+                if (Array.isArray(result[0][value])) {
+                    let arr = result[0][value];
+                    s += "<li><i>" + value + "</i>: ";
+                    for (let i = 0; i < arr.length; i ++) {
+                        s += arr[i] + ", ";
+                    }                    
+                    s += "</li>";
+                } else {
+                    s += "<li><i>" + value + "</i>: " + result[0][value] + "</li>";
+                }
+            }
         });
         s += "</ul>";
         dom.html(s);
     });
+}
+
+// get sponsor data
+const getSponsors = (api, dom) => {
+    logit("calling " + api);
+    $.ajax({
+        type: "GET",
+        url: api,
+        success: function(result) {
+            let s = '';
+            s += "<h3>Witness Sponsors</h3>";
+            let data = result.results;
+            let datalen = data.length;
+            s += "<ul>";
+            let count = 0;
+            for (let i = 0; i < datalen; ++ i) {
+                if (data[i]['is_witness']) {
+                    s += "<li>" + getSteemUrl(data[i].account) + "</li>";
+                    count ++;
+                }
+            }
+            s += "</ul>";
+            s += "<div>Total: <B>" + count + "</B><div>";
+            s += "<h3>Opt-out Sponsors</h3>";
+            s += "<ul>";
+            count = 0;
+            for (let i = 0; i < datalen; ++ i) {
+                if (data[i]['opted_out']) {
+                    s += "<li>" + getSteemUrl(data[i].account) + "</li>";
+                    count ++;
+                }
+            }
+            s += "</ul>";
+            s += "<div>Total: <B>" + count + "</B><div>";
+            dom.html(s);
+        },
+        error: function(request, status, error) {
+            logit('Response: ' + request.responseText);
+            logit('Error: ' + error );
+            logit('Status: ' + status);
+        },
+        complete: function(data) {
+            logit("API Finished: " + api);
+        }             
+    });        
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -750,7 +754,8 @@ document.addEventListener('DOMContentLoaded', function() {
         "post_count",
         "delegated_vesting_shares",
         "voting_power",
-        "reputation"    
+        "reputation",
+        "witness_votes"
     ], getNode());
     // rep calculator
     $('button#btn_rep').click(function() {
@@ -758,5 +763,25 @@ document.addEventListener('DOMContentLoaded', function() {
         let reputation = steem.formatter.reputation(rep);
         $('div#rep_result').html("Reputation of " + rep + " = <B>" + reputation + "</B>");
     });
-    getStats("https://api.utopian.io/api/stats", $("div#stats"));        
+    getStats("https://api.utopian.io/api/stats", $("div#stats"));
+    // ping tests
+    $('button#btn_ping').click(function() {
+        // clear the test window
+        $('div#ping_result').html('');
+        // test all nodes
+        $("select#nodes option").each(function() {
+            let node = $(this).val();
+            ping(node).then(function(delta) {
+                let msg = '<i><font color=white>' + node + '</font></i>: ' + 'Ping time was <font color=green>' + String(delta) + '</font> ms<BR/>';
+                console.log(msg);
+                $('div#ping_result').append(msg);
+            }).catch(function(err) {
+                let msg = '<i><font color=white>' + node + '</font></i>: ' + '<font color=red>' + 'Time-out: ' + err + '</font><BR/>';
+                console.error(msg);
+                $('div#ping_result').append(msg);
+            });            
+        });
+    });
+    // get sponsor api
+    getSponsors("https://api.utopian.io/api/sponsors", $("div#sponsors"));
 }, false);

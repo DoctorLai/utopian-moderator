@@ -5,6 +5,7 @@
     <title>Utopian Chrome Extension</title>
     <meta name="author" content="@justyy">
     <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/functions.js"></script>
     <script src="js/moment.min.js"></script>
     <script src="js/Chart.min.js"></script>
     <script src="js/chartjs-plugin-streaming.js"></script>
@@ -18,14 +19,16 @@
     <link rel="stylesheet" href="css/jquery-ui.css" />
     <script src="js/jquery-ui.js"></script>     
     <script src="js/steem.min.js"></script>
+    <script src="js/ping.js"></script> 
     <script src="js/utopian.js"></script> 
     <style>
-    .ext-window {width: 850px;}
+    .ext-window {width: 770px;}
     textarea {width: 100%;}
     img {max-width: 100%;}
     .chart {width: 100%; height: 570px;}
     .vpbar {width: 100%; background-color: grey;}
     .vp {color: white;}
+    div#ping_result {background: black; color: yellow;}
     </style>
   </head>
   <body>
@@ -35,10 +38,11 @@
         <li><a href="#tabs-unreviewed">Unreviewed</a></li>
         <li><a href="#tabs-moderators">Moderator</a></li>
         <li><a href="#tabs-supervisor">Supervisor</a></li>
-        <li><a href="#tabs-chart">Chart</a></li>
+        <li><a href="#tabs-sponsor">Sponsor</a></li>
+        <li><a href="#tabs-chart">Charts</a></li>
         <li><a href="#tabs-posts">Posts</a></li>
-        <li><a href="#tabs-stats">Stats</a></li>
-        <li><a href="#tabs-setting">Setting</a></li>
+        <li><a href="#tabs-stats">Statistics</a></li>
+        <li><a href="#tabs-setting">Settings</a></li>
         <li><a href="#tabs-tools">Tools</a></li>
         <li><a href="#tabs-log">Log</a></li>        
       </ul>
@@ -81,7 +85,10 @@
         <h4>Chart by Total Moderated in the Team</h4>
         <div id='search_result_chart_members' class="chart"> </div>        
         <div id='search_result_chart' class="chart"> </div>        
-      </div>                  
+      </div> 
+      <div id="tabs-sponsor">
+        <div id='sponsors'> </div>
+      </div>                        
       <div id="tabs-chart">    
         <img id='loading-chart' src='images/loading.gif' />
         <h4>Top Moderators by total_moderated</h4>
@@ -135,6 +142,9 @@
         <p><input type='number' class='form-control' id='steemit_reputation' name='steemit_reputation' placeholder="Raw Reputation Value" value=''></p>
         <p><button class='form-control' style='width: 110px' id='btn_rep'>Calculate</button></p>
         <div id='rep_result'> </div>
+        <h4>Steem Nodes Ping Tests<h4>
+        <p><button class='form-control' style='width: 110px' id='btn_ping'>Test</button></p>
+        <div id='ping_result'> </div>
       </div>       
       <div id="tabs-log">
         <h4>Proudly brought to you by <a target=_blank href="https://steemit.com/@justyy">@justyy</a></h4>
