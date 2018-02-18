@@ -169,6 +169,23 @@ function getStats(api, dom) {
             let cats = stats.categories;
             let keys = Object.keys(cats);
             let keylen = keys.length;
+            let charts = [];
+            charts['average_tags_per_post'] = [];
+            charts['total_tags'] = [];
+            charts['average_links_per_post'] = [];
+            charts['total_links'] = [];
+            charts['average_images_per_post'] = [];
+            charts['total_images'] = [];
+            charts['average_posts_length'] = [];
+            charts['total_posts_length'] = [];
+            charts['average_paid_curators'] = [];
+            charts['total_paid_curators'] = [];
+            charts['average_paid_authors'] = [];
+            charts['total_paid_authors'] = [];
+            charts['total_paid'] = [];
+            charts['average_likes_per_post'] = [];
+            charts['total_likes'] = [];
+            charts['total_posts'] = [];
             for (let i = 0; i < keylen; i ++) {
                 s += "<li>";
                 s += "<h5>" + keys[i] + "</h5>";
@@ -178,12 +195,48 @@ function getStats(api, dom) {
                 s += "<ul>";
                 for (let j = 0; j < catkeylen; j ++) {
                     let att = cat[catkeys[j]];
+                    charts[catkeys[j]].push({"category": keys[i], "value": att});
                     s += "<li><i>" + catkeys[j] + "</i>: " + att + "</li>";
                 }
                 s += "</ul>";
                 s +="</li>";
             }
             s += "</ul>";
+            let chart_keys = Object.keys(charts);
+            let chart_keys_len = chart_keys.length;
+            for (let i = 0; i < chart_keys_len; ++ i) {
+                let chart_div_name = "stats_chart_" + chart_keys[i];
+                $('div#stats_div').append("<h4>" + chart_keys[i] + "</h4>");
+                $('div#stats_div').append("<div class=chart id=" + chart_div_name + "> </div>");
+                let chart = AmCharts.makeChart( chart_div_name, {
+                    "type": "serial",
+                    "theme": "light",
+                    "dataProvider": charts[chart_keys[i]],
+                    "valueAxes": [{
+                        "title": chart_keys[i]
+                    }],
+                    "graphs": [{
+                        "balloonText": "[[category]]:[[value]]",
+                        "fillAlphas": 1,
+                        "lineAlpha": 0.2,
+                        "title": chart_keys[i],
+                        "type": "column",
+                        "valueField": "value"
+                    }],
+                    "depth3D": 20,
+                    "angle": 30,
+                    "rotate": true,
+                    "categoryField": "category",
+                    "categoryAxis": {
+                        "gridPosition": "start",
+                        "fillAlpha": 0.05,
+                        "position": "left"
+                    },
+                    "export": {
+                        "enabled": true
+                     }
+                });
+            }
             dom.html(s);
         },
         error: function(request, status, error) {
@@ -382,14 +435,20 @@ function getModeratorStats(api, dom_approved, dom_rejected, dom_stats, div_of_ch
     });    
 }
 
+// get voting power
 function getVP(id, dom, server) {
     server = server || default_node;
     steem.api.setOptions({ url: server });
 
-	steem.api.getAccounts([id], function(err, response) {
-    	if (!err) {
-    		let result = (response[0].voting_power) / 100;
-    		dom.html("<i>@" + id + "'s Voting Power is</i> <B>" + result + "%</B>");
+    steem.api.getAccounts([id], function(err, response) {
+        if (!err) {
+            let result = response[0].voting_power;
+            let last_vote_time = response[0].last_vote_time;
+            let diff = (Date.now() - Date.parse(last_vote_time)) / 1000;
+            let regenerated_vp = diff * 10000 / 86400 / 5;
+            let total_vp = (result + regenerated_vp) / 100;
+            total_vp = Math.min(100, total_vp);
+            dom.html("<i>@" + id + "'s Voting Power is</i> <B>" + total_vp.toFixed(2) + "%</B>");
             if (result < 30) {
                 dom.css("background-color", "red");
             } else if (result < 60) {
@@ -398,12 +457,12 @@ function getVP(id, dom, server) {
                 dom.css("background-color", "green");
             }
             dom.css("color", "white");
-            dom.css("width", result + "%");
-    		logit("API Finished: VP: " + id);
-		} else {
-			logit("API error: VP: " + id + ": " + err);
-		}
-	});   
+            dom.css("width", total_vp + "%");
+            logit("API Finished: VP - " + server + ": " + id);
+        } else {
+            logit("API error: " + server + ": " + err);
+        }
+    });   
 }
 
 function getRep(id, dom, server) {
@@ -412,7 +471,7 @@ function getRep(id, dom, server) {
 
 	steem.api.getAccounts([id], function(err, response) {
 		if (!err){
-			let result = steem.formatter.reputation(response[0].reputation);
+			let result = formatReputation(response[0].reputation);
 			let av = steem.formatter.estimateAccountValue(response[0]);
 		    av.then(value => {
                 dom.html("<i>@" + id + "'s Reputation is</i> <B>" + result + "</B><br><i>@" + id + "'s Total Account Value is</i> <B>$" + value + "</B>");
@@ -588,7 +647,7 @@ const getData = (id, dom, item, server) => {
         console.log(result);
         $.each(item, function(index, value) {
             if (value == 'reputation') {
-                s += "<li><i>" + value + "</i>: " + result[0][value] + ' (<B>' + steem.formatter.reputation(result[0][value]) + "</B>)</li>";
+                s += "<li><i>" + value + "</i>: " + result[0][value] + ' (<B>' + formatReputation(result[0][value]) + "</B>)</li>";
             } else if (value == 'voting_power') {
                 s += "<li><i>" + value + "</i>: " + (result[0][value]/100) + "%</li>";
             } else {
@@ -622,11 +681,13 @@ const getSponsors = (api, dom) => {
             let datalen = data.length;
             s += "<ul>";
             let count = 0;
+            let total_vesting = 0;
             for (let i = 0; i < datalen; ++ i) {
                 if (data[i]['is_witness']) {
                     s += "<li>" + getSteemUrl(data[i].account) + "</li>";
                     count ++;
                 }
+                total_vesting += data[i].vesting_shares;
             }
             s += "</ul>";
             s += "<div>Total: <B>" + count + "</B><div>";
@@ -641,6 +702,29 @@ const getSponsors = (api, dom) => {
             }
             s += "</ul>";
             s += "<div>Total: <B>" + count + "</B><div>";
+            let data_chart = [];
+            let vesting = 0;
+            for (let i = 0; i < datalen; ++ i) {
+                if (data[i].percentage_total_vesting_shares >= 1) {
+                    vesting += data[i].vesting_shares;
+                    data_chart.push({"sponsor": data[i].account, "vesting_shares": data[i].vesting_shares});
+                }
+            }          
+            data_chart.push({"sponsor": "Others", "vesting_shares": total_vesting - vesting})
+            let chart = AmCharts.makeChart( "sponsors_chart", {
+                "type": "pie",
+                "theme": "light",
+                "dataProvider": data_chart,
+                "startDuration": 0,
+                "valueField": "vesting_shares",
+                "titleField": "sponsor",
+                "balloon":{
+                  "fixedPosition": true
+                },
+                "export": {
+                  "enabled": false
+                }
+            });                    
             dom.html(s);
         },
         error: function(request, status, error) {
@@ -760,7 +844,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // rep calculator
     $('button#btn_rep').click(function() {
         let rep = parseInt($('input#steemit_reputation').val());
-        let reputation = steem.formatter.reputation(rep);
+        let reputation = formatReputation(rep);
         $('div#rep_result').html("Reputation of " + rep + " = <B>" + reputation + "</B>");
     });
     getStats("https://api.utopian.io/api/stats", $("div#stats"));

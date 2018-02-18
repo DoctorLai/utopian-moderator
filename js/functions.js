@@ -64,3 +64,16 @@ const escapeHtml = (unsafe) => {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
  }
+
+// correct format of reputation with 3 decimal places
+// PR not merged yet: https://github.com/steemit/steem-js/pull/345
+const formatReputation = function(reputation, decimal_places = 3) {
+	if (reputation == null) return reputation;
+	let neg = reputation < 0;
+	let rep = String(reputation);
+	rep = neg ? rep.substring(1) : rep;
+	let v = (Math.log10((rep > 0 ? rep : -rep) - 10) - 9);
+	v =  neg ? -v : v;
+	let vv = v * 9 + 25;
+	return +(Math.round(vv + "e+" + decimal_places)  + "e-" + decimal_places);
+}
