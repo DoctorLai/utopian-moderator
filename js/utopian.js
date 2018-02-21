@@ -4,6 +4,31 @@
 const default_node = "https://api.steemit.com";
 steem.api.setOptions({ url: default_node });
 
+// save settings
+const saveSettings = (showMsg = true) => {
+    let id = $('input#steemit_id').val().trim();
+    let website = $('select#steemit_website').val();
+    let friends = $('textarea#friends').val();
+    let nodes = $('select#nodes').val();    
+    let utopian = {};
+    utopian['steemit_id'] = id;
+    utopian['steemit_website'] = website;
+    utopian['friends'] = friends;
+    utopian['nodes'] = nodes;
+    utopian['top_limit'] = parseInt($('input#top_limit').val());
+    utopian['top_start'] = $('input#top_start').val().trim();
+    utopian['top_end'] = $('input#top_end').val().trim();
+    utopian['top_sort1'] = $('select#top_sort1').val().trim();
+    utopian['top_new'] = $('input#top_limit').is(':checked');
+    chrome.storage.sync.set({ 
+        utopian_settings: utopian
+    }, function() {
+        if (showMsg) {
+            alert('Settings Saved (Required: Reload Extension)');
+        }
+    });    
+}
+
 // get Node
 const getNode = () => {
     return $('select#nodes').val();
@@ -270,6 +295,7 @@ function updateModerators(api) {
                 let row = arr[i];
                 if (row["account"] == id) {
                     s += "<h3>Hello " + id + "!</h3>";
+                    s += "<img style='float:right' src='https://api.utopian.io/api/users/" + id + "/avatar?size=96&round=true'>";
                     s + "<ul>";
                     if ((row["supermoderator"]) || (row["referrer"] == undefined)) {
                         s += "<li>You are a Supervisor.</li>";                        
@@ -779,25 +805,38 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }                
             }
+            if (utopian['top_limit']) {
+                $('input#top_limit').val(parseInt(utopian['top_limit']));
+            }
+            if (utopian['top_start']) {
+                $('input#top_start').val(utopian['top_start']);
+            }
+            if (utopian['top_end']) {
+                $('input#top_end').val(utopian['top_end']);
+            }
+            if (utopian['top_sort1']) {
+                $('select#top_sort1').val(utopian['top_sort1']);
+            }
+            if (utopian['top_new']) {
+                $('select#top_new').prop("checked", utopian['top_new']);
+            }
             // get node infor
             $('select#nodes').val(utopian['nodes']);            
         }
+        if ($('input#top_limit').val().trim() == '') {
+            $('input#top_limit').val(10);
+        }
+        // default 7 days ago
+        if ($('input#top_start').val().trim() == '') {
+            $('input#top_start').val(getLastWeek().toISOString().substr(0, 10));
+        }
+        // default today
+        if ($('input#top_end').val().trim() == '') {
+            $('input#top_end').val(new Date().toISOString().substr(0, 10));
+        }
     });
     $('button#save_id_btn').click(function() {
-        let id = $('input#steemit_id').val().trim();
-        let website = $('select#steemit_website').val();
-        let friends = $('textarea#friends').val();
-        let nodes = $('select#nodes').val();
-        let utopian = {};
-        utopian['steemit_id'] = id;
-        utopian['steemit_website'] = website;
-        utopian['friends'] = friends;
-        utopian['nodes'] = nodes;
-        chrome.storage.sync.set({ 
-            utopian_settings: utopian
-        }, function() {
-            alert('Settings Saved (Required: Reload Extension)');
-        });
+        saveSettings();
     });  
     // utopian-io
     getVP("utopian-io", $("div#account_utopian_vp"), getNode());
@@ -868,4 +907,55 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     // get sponsor api
     getSponsors("https://api.utopian.io/api/sponsors", $("div#sponsors"));
+    // top projects and contributions
+    $('button#btn_top').click(function() {
+        $('div#top_result').html("<img id='loading' src='images/loading.gif' />");
+        let limit = parseInt($('input#top_limit').val());
+        let start = $('input#top_start').val().trim();
+        let end = $('input#top_end').val().trim();
+        let sort1 = $('select#top_sort1').val().trim();
+        let sort2 = "projects";
+        let only_new = $('input#top_new').is(":checked") ? "true" : "false";
+        let api = "https://api.utopian.io/api/posts/top?limit=" + limit + "&start_date=" + start + "&end_date=" + end + "&sort_by=" + sort1 + "&retrieve_by=" + sort2 + "&only_new=" + only_new;
+        logit("calling " + api);
+        saveSettings(false);
+        $.ajax({
+            type: "GET",
+            url: api,
+            success: function(result) {
+                let s = "<table style='width:100%'>";
+                s += "<thead>";
+                s += "<tr><th>Project Name</th><th>Description</th><th>Count<th>Rewards</th><th>License</th></tr>";
+                s += "</thead>";                                
+                let len = result.length;
+                for (let i = 0; i < len; ++ i) {
+                    s += "<tr>";
+                    let github = result[i].github;
+                    let lic = github.license;
+                    let home_url = github.home_url;
+                    let project_name = github['name'];
+                    let description = github['description'];
+                    let count = result[i]['count'];
+                    let rewards = result[i]['rewards'];
+                    let license = lic ? lic['name'] : '';
+                    s += "<td><a target=_blank href='" + home_url + "'>" + project_name + "</a></td>";
+                    s += "<td>" + description + "</td>";
+                    s += "<td>" + count + "</td>";
+                    s += "<td>" + rewards.toFixed(3) + "</td>";
+                    s += "<td>" + license + "</td>";                    
+                    s += "</tr>";
+                }                
+                s += "</table>";
+                $('div#top_result').html(s);
+            },
+            error: function(request, status, error) {
+                logit('Response: ' + request.responseText);
+                logit('Error: ' + error );
+                logit('Status: ' + status);
+            },
+            complete: function(data) {
+                logit("API Finished: " + api);                
+            }             
+        });            
+    });
 }, false);

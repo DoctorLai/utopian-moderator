@@ -77,3 +77,10 @@ const formatReputation = function(reputation, decimal_places = 3) {
 	let vv = v * 9 + 25;
 	return +(Math.round(vv + "e+" + decimal_places)  + "e-" + decimal_places);
 }
+
+// get last week
+const getLastWeek = () => {
+    let today = new Date();
+    let lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+    return lastWeek;
+}

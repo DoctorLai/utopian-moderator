@@ -45,6 +45,7 @@
         <li><a href="#tabs-stats">Statistics</a></li>
         <li><a href="#tabs-setting">Settings</a></li>
         <li><a href="#tabs-tools">Tools</a></li>
+        <li><a href="#tabs-top">Projects</a></li>
         <li><a href="#tabs-log">Log</a></li>        
       </ul>
       <div id="tabs-general">
@@ -149,6 +150,21 @@
         <p><button class='form-control' style='width: 110px' id='btn_ping'>Test</button></p>
         <div id='ping_result'> </div>
       </div>       
+      <div id="tabs-top">
+        <h4>Top Projects</h4>
+        <form class='form-inline'>
+          <input class='form-control' placeholder='Number of Posts to return' type='number' step=1 value='10' id=top_limit>
+          <input class='form-control' placeholder='Start Date e.g. 2018-01-01' type='text' value='' id=top_start>
+          <input class='form-control' placeholder='End Date e.g. 2018-01-01' type='text' value='' id=top_end>
+          <select class='form-control' id='top_sort1'>
+            <option value='contributions'>Sort By Contributions</option>
+            <option value='rewards'>Sort By Rewards</option>
+          </select>
+          <label><input type='checkbox' class='form-control' id=top_new>Only New</label>
+          <button type='button' class='form-control' style='width: 110px' id='btn_top'>Query</button>
+        </form>
+        <div id='top_result'> </div>
+      </div>        
       <div id="tabs-log">
         <h4>Proudly brought to you by <a target=_blank href="https://steemit.com/@justyy">@justyy</a></h4>
         <textarea readonly class='form-control' rows=15 id='about'>           
