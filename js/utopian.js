@@ -46,7 +46,7 @@ const logit = (msg) => {
 // return the total number for status posts
 const getModeratedCount = (id, status) => {
     return new Promise((resolve, reject) => {
-        let api = "https://api.utopian.io/api/posts/?moderator=" + id + "&status=" + status + "&skip=0&limit=1";    
+        let api = "https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("https://api.utopian.io/api/posts/?moderator=" + id + "&status=" + status + "&skip=0&limit=1");    
         fetch(api, {mode: 'cors'}).then(validateResponse).then(readResponseAsJSON).then(function(result) {
             resolve(result.total);
         });        
@@ -67,47 +67,49 @@ function updateUnreviewed(api) {
         url: api,
         success: function(result) {
             let data = [];
-            let categories = result.posts.pending.categories;
-            let total = result.posts.pending._total;
-            let s = "<h5>Total: <B>" + total + "</B></h5>";
-            data.push({"name": "development", "category": "Development", "posts":categories.development});
-            data.push({"name": "bug-hunting", "category": "Bug Hunting", "posts":categories.bug_hunting});
-            data.push({"name": "sub-projects", "category": "Sub Projects", "posts":categories.sub_projects});
-            data.push({"name": "documentation", "category": "Documentation", "posts":categories.documentation});
-            data.push({"name": "translations", "category": "Translations", "posts":categories.translations});
-            data.push({"name": "analysis", "category": "Analysis", "posts":categories.analysis});
-            data.push({"name": "ideas", "category": "Suggestions", "posts":categories.ideas});
-            data.push({"name": "graphics", "category": "Graphics", "posts":categories.graphics});
-            data.push({"name": "tutorials", "category": "Tutorials", "posts":categories.tutorials});
-            data.push({"name": "video-tutorials", "category": "Video Tutorials", "posts":categories.video_tutorials});
-            data.push({"name": "blog", "category": "Blog", "posts":categories.blog});
-            data.push({"name": "tasks", "category": "Task Requests", "posts":categories.tasks});
-            data.push({"name": "social", "category": "Visibility", "posts":categories.visibility});
-            data.push({"name": "copywriting", "category": "Copywriting", "posts":categories.copywriting});
-            let datalen = data.length;
-            data.sort(function(a, b) {
-                return b['posts'] - a['posts'];
-            })
-            s += "<ul>";
-            for (let i = 0; i < datalen; ++ i) {
-                s += "<li><a target=_blank href='https://utopian.io/" + data[i]['name'] + "/review'>" + data[i]['category'] + ' (' + data[i]['posts'] + ')</a></li>';
-            }
-            s += "</ul>";            
-            $('div#unreviewed_cnt').html(s);
-            let chart = AmCharts.makeChart( "chart_unreviewed", {
-                "type": "pie",
-                "theme": "light",
-                "dataProvider": data,
-                "startDuration": 0,
-                "valueField": "posts",
-                "titleField": "category",
-                "balloon":{
-                  "fixedPosition": true
-                },
-                "export": {
-                  "enabled": false
+            if (result && result.posts && result.pending && result.peending.categories) {
+                let categories = result.posts.pending.categories;
+                let total = result.posts.pending._total;
+                let s = "<h5>Total: <B>" + total + "</B></h5>";
+                data.push({"name": "development", "category": "Development", "posts":categories.development});
+                data.push({"name": "bug-hunting", "category": "Bug Hunting", "posts":categories.bug_hunting});
+                data.push({"name": "sub-projects", "category": "Sub Projects", "posts":categories.sub_projects});
+                data.push({"name": "documentation", "category": "Documentation", "posts":categories.documentation});
+                data.push({"name": "translations", "category": "Translations", "posts":categories.translations});
+                data.push({"name": "analysis", "category": "Analysis", "posts":categories.analysis});
+                data.push({"name": "ideas", "category": "Suggestions", "posts":categories.ideas});
+                data.push({"name": "graphics", "category": "Graphics", "posts":categories.graphics});
+                data.push({"name": "tutorials", "category": "Tutorials", "posts":categories.tutorials});
+                data.push({"name": "video-tutorials", "category": "Video Tutorials", "posts":categories.video_tutorials});
+                data.push({"name": "blog", "category": "Blog", "posts":categories.blog});
+                data.push({"name": "tasks", "category": "Task Requests", "posts":categories.tasks});
+                data.push({"name": "social", "category": "Visibility", "posts":categories.visibility});
+                data.push({"name": "copywriting", "category": "Copywriting", "posts":categories.copywriting});
+                let datalen = data.length;
+                data.sort(function(a, b) {
+                    return b['posts'] - a['posts'];
+                })
+                s += "<ul>";
+                for (let i = 0; i < datalen; ++ i) {
+                    s += "<li><a target=_blank href='https://utopian.io/" + data[i]['name'] + "/review'>" + data[i]['category'] + ' (' + data[i]['posts'] + ')</a></li>';
                 }
-            });          
+                s += "</ul>";            
+                $('div#unreviewed_cnt').html(s);
+                let chart = AmCharts.makeChart( "chart_unreviewed", {
+                    "type": "pie",
+                    "theme": "light",
+                    "dataProvider": data,
+                    "startDuration": 0,
+                    "valueField": "posts",
+                    "titleField": "category",
+                    "balloon":{
+                      "fixedPosition": true
+                    },
+                    "export": {
+                      "enabled": false
+                    }
+                });          
+            }
         },
         error: function(request, status, error) {
             logit('Response: ' + request.responseText);
@@ -295,7 +297,7 @@ function updateModerators(api) {
                 let row = arr[i];
                 if (row["account"] == id) {
                     s += "<h3>Hello " + id + "!</h3>";
-                    s += "<img style='float:right' src='https://api.utopian.io/api/users/" + id + "/avatar?size=96&round=true'>";
+                    s += "<img style='float:right' src='" + "https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("https://api.utopian.io/api/users/" + id + "/avatar?size=96&round=true") + "'>";
                     s + "<ul>";
                     if ((row["supermoderator"]) || (row["referrer"] == undefined)) {
                         s += "<li>You are a Supervisor.</li>";                        
@@ -303,9 +305,9 @@ function updateModerators(api) {
                         s += "<li>Your supervisor is <B>" + getSteemUrl(row["referrer"]) + "</B>.</a></li>";
                     }                        
                     s += "<li>You have moderated <B>" + row["total_moderated"] + "</B> posts.</li>";
-                    s += "<li>You should receive rewards: <B>" + (row["should_receive_rewards"].toFixed(3)) + "</B> STEEM.</li>";
-                    s += "<li>Total paid rewards: <B>" + (row["total_paid_rewards_steem"].toFixed(3)) + "</B> STEEM.</li>";
-                    s += "<li>Percentage of Total Moderator Rewards: <B>" + (row["percentage_total_rewards_moderators"].toFixed(2)) + "</B>% .</li>";
+                    s += "<li>You should receive rewards: <B>" + (row["should_receive_rewards"]) + "</B> STEEM.</li>";
+                    s += "<li>Total paid rewards: <B>" + (row["total_paid_rewards_steem"]) + "</B> STEEM.</li>";
+                    s += "<li>Percentage of Total Moderator Rewards: <B>" + (row["percentage_total_rewards_moderators"]) + "</B>% .</li>";
                     s += "</ul>";                    
                 }
                 data_cnt.push({"moderator": row["account"], "total_moderated": row["total_moderated"]});
@@ -597,7 +599,7 @@ function getTeamMembers(id, api, dom, div_of_chart) {
                         });
                         s += "<td>" + (total_paid_rewards_steem.toFixed(2)) + "</td>";
                         s += "<td>" + (should_receive_rewards.toFixed(2)) + "</td>";
-                        s += "<td>" + (row["percentage_total_rewards_moderators"].toFixed(2)) + "%</td>";
+                        s += "<td>" + (row["percentage_total_rewards_moderators"]) + "%</td>";
                         s += "</tr>";                    
                         cnt1 += row["total_moderated"];
                         cnt2 += row["percentage_total_rewards_moderators"];
@@ -782,8 +784,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     $('input#contributor_id').val(id);  
                     getVP(id, $("div#account_vp"), utopian['nodes']);
                     getRep(id, $("div#account_rep"), utopian['nodes']);
-                    getModeratorStats("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=8", $("div#moderators_approved"), $("div#moderators_rejected"), $('div#moderators_stats'), "chart_moderators");
-                    getTeamMembers(id, "https://api.utopian.io/api/moderators", $("div#search_team_result"), search_result_chart_members);
+                    getModeratorStats("https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=8"), $("div#moderators_approved"), $("div#moderators_rejected"), $('div#moderators_stats'), "chart_moderators");
+                    getTeamMembers(id, "https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("https://api.utopian.io/api/moderators"), $("div#search_team_result"), search_result_chart_members);
                 }
             }
             if (utopian["steemit_website"]) {
@@ -846,11 +848,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let app_name = manifest.name + " v" + manifest.version;
     $('textarea#about').val('Application: ' + app_name + '\n' + 'Chrome Version: ' + getChromeVersion());
     // general
-    updateStats("https://api.utopian.io/api/stats");
+    updateStats("https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("https://api.utopian.io/api/stats"));
     // load moderator data
-    updateModerators("https://api.utopian.io/api/moderators");
+    updateModerators("https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("https://api.utopian.io/api/moderators"));
     // load unreviewed contributions
-    updateUnreviewed("https://utopian.plus/unreviewedPosts.json");
+    updateUnreviewed("https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("http://utopian.plus/unreviewedPosts.json"));
     // search a id when press Enter
     textPressEnterButtonClick($('input#mod_id'), $('button#search_id'));
     // find user's details.
@@ -862,8 +864,8 @@ document.addEventListener('DOMContentLoaded', function() {
             $("div#search_result_rep").html("<img id='loading' src='images/loading.gif' />");
             getVP(id, $("div#search_result_vp"), getNode());
             getRep(id, $("div#search_result_rep"), getNode());
-            getModeratorStats("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=8", $("div#search_result_approved"), $("div#search_result_rejected"), $('div#search_result_stats'), "search_result_chart");
-            updateModeratorsById(id, "https://api.utopian.io/api/moderators", $("div#search_result_stats2"));            
+            getModeratorStats("https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("https://api.utopian.io/api/posts?moderator=" + id + "&skip=0&limit=8"), $("div#search_result_approved"), $("div#search_result_rejected"), $('div#search_result_stats'), "search_result_chart");
+            updateModeratorsById(id, "https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("https://api.utopian.io/api/moderators"), $("div#search_result_stats2"));            
         }        
     });
     // get latest utopian posts
@@ -886,7 +888,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let reputation = formatReputation(rep);
         $('div#rep_result').html("Reputation of " + rep + " = <B>" + reputation + "</B>");
     });
-    getStats("https://api.utopian.io/api/stats", $("div#stats"));
+    getStats("https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("https://api.utopian.io/api/stats"), $("div#stats"));
     // ping tests
     $('button#btn_ping').click(function() {
         // clear the test window
@@ -906,7 +908,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     // get sponsor api
-    getSponsors("https://api.utopian.io/api/sponsors", $("div#sponsors"));
+    getSponsors("https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("https://api.utopian.io/api/sponsors"), $("div#sponsors"));
     // top projects and contributions
     $('button#btn_top').click(function() {
         $('div#top_result').html("<img id='loading' src='images/loading.gif' />");
@@ -916,7 +918,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let sort1 = $('select#top_sort1').val().trim();
         let sort2 = "projects";
         let only_new = $('input#top_new').is(":checked") ? "true" : "false";
-        let api = "https://api.utopian.io/api/posts/top?limit=" + limit + "&start_date=" + start + "&end_date=" + end + "&sort_by=" + sort1 + "&retrieve_by=" + sort2 + "&only_new=" + only_new;
+        let api = "https://uploadbeta.com/api/utopian/?api=" + encodeURIComponent("https://api.utopian.io/api/posts/top?limit=" + limit + "&start_date=" + start + "&end_date=" + end + "&sort_by=" + sort1 + "&retrieve_by=" + sort2 + "&only_new=" + only_new);
         logit("calling " + api);
         saveSettings(false);
         $.ajax({
