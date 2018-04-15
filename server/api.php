@@ -49,6 +49,12 @@ if (!$api) {
   die();
 }
 
+// prevent invalid hacking
+$host = strtolower(parse_url($api, PHP_URL_HOST));
+if ($host != 'api.utopian.io') {
+  die();
+}
+
 $headers = array("Origin: " . ORIGIN, "x-api-key: " . API_KEY, "x-api-key-id: " . API_KEY_ID);
 $err = '';
 $data = CallAPI($api, $err, null, $headers);
